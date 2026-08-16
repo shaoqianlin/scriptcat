@@ -209,12 +209,6 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Theme input */
-  .theme-card { border: 2px solid var(--primary); background: #EFF6FF; }
-  .theme-input { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; font-size: 16px; font-family: inherit; background: #fff; }
-  .theme-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
-  .theme-input::placeholder { color: #94A3B8; }
-
   /* Classify result */
   .classify-result {
     background: #F0F9FF; border: 2px solid #BAE6FD; border-radius: 16px;
@@ -224,16 +218,6 @@
   .classify-row { display: flex; gap: 8px; margin-bottom: 4px; font-size: 14px; align-items: baseline; }
   .classify-label { color: var(--sub); flex-shrink: 0; font-weight: 600; }
   .classify-value { color: var(--text); font-weight: 600; }
-
-  /* Strategy Card */
-  .strategy-card { border: 2px solid var(--primary); background: #EFF6FF; }
-  .strategy-header { font-size: 17px; font-weight: 800; color: var(--primary); margin-bottom: 16px; text-align: center; }
-  .strategy-row { display: flex; gap: 10px; margin-bottom: 10px; font-size: 15px; align-items: baseline; padding: 10px 14px; background: #fff; border-radius: 12px; border: 1px solid var(--border); }
-  .strategy-label { color: var(--sub); font-weight: 700; flex-shrink: 0; min-width: 80px; font-size: 13px; }
-  .strategy-value { color: var(--text); font-weight: 600; }
-
-  /* Result */
-  .result-box { background: #F8FAFC; border-radius: 16px; padding: 20px; font-size: 15px; line-height: 1.9; white-space: pre-wrap; margin-bottom: 16px; border: 1px solid var(--border); }
 
   /* Loading */
   .loading { text-align: center; padding: 80px 0; }
@@ -368,7 +352,6 @@
     .why-viral-banner { padding: 16px; }
     .why-viral-banner .wv-title { font-size: 15px; }
     .why-viral-banner .wv-text { font-size: 14px; }
-    .result-box { padding: 16px; font-size: 14px; }
     .history-panel { padding: 20px 14px calc(36px + env(safe-area-inset-bottom, 0px)); }
   }
 
@@ -581,63 +564,6 @@
     </div>
   </div>
 
-  <!-- ====== Screen 3: 生成我的爆款 ====== -->
-  <div class="screen" id="screen-fill">
-    <div class="page-title">✨ 生成我的爆款</div>
-    <div class="page-subtitle">基于爆款结构，生成属于你自己的爆款脚本</div>
-
-    <!-- Inputs -->
-    <div class="card">
-      <div class="section-label">🎯 我的主题</div>
-      <textarea class="theme-input" id="themeInput" placeholder="请输入你想创作的主题，例如：&#10;&#10;"大学生如何学习AI"&#10;"新手如何做小红书"&#10;"第一次创业踩坑经历"" style="min-height:100px;"></textarea>
-    </div>
-
-    <div class="card">
-      <div class="section-label">💡 我的想法</div>
-      <textarea class="theme-input" id="ideaInput" placeholder="告诉猫猫你的想法：&#10;&#10;你想表达什么？&#10;你的观点是什么？&#10;有没有自己的经历、案例、故事？&#10;&#10;例如：&#10;"我觉得很多大学生想学AI，但是不知道从哪里开始，而且容易被课程割韭菜。"" style="min-height:130px;"></textarea>
-      <button class="btn btn-primary" id="btnPreview" onclick="previewStrategy()" style="margin-top:14px;">
-        🐱 分析创作方向
-      </button>
-    </div>
-
-    <!-- Strategy Card -->
-    <div class="card strategy-card" id="strategyCard" style="display:none;">
-      <div class="strategy-header">🐱 爆款猫理解你的创作方向</div>
-      <div class="strategy-row"><span class="strategy-label">内容类型</span><span class="strategy-value" id="sContentType">-</span></div>
-      <div class="strategy-row"><span class="strategy-label">匹配爆款结构</span><span class="strategy-value" id="sStructure">-</span></div>
-      <div class="strategy-row"><span class="strategy-label">核心观点</span><span class="strategy-value" id="sViewpoint">-</span></div>
-      <div class="strategy-row"><span class="strategy-label">脚本方向</span><span class="strategy-value" id="sDirection">-</span></div>
-      <button class="btn btn-primary" id="btnGenerate" onclick="generateMyScript()" style="margin-top:16px;">
-        🚀 生成我的爆款脚本
-      </button>
-    </div>
-
-    <!-- Loading (reuse for generation) -->
-    <div id="genLoading" style="display:none; text-align:center; padding:40px 0;">
-      <div class="spinner"></div>
-      <p style="font-size:15px; color:var(--sub);">🐱 正在生成你的爆款脚本...</p>
-    </div>
-
-    <!-- Result -->
-    <div id="resultBox" style="display:none">
-      <div class="card">
-        <div class="page-title" style="font-size:18px;">🎉 你的爆款脚本</div>
-        <div class="page-subtitle">AI基于爆款结构和你的想法生成，检查一下再复制</div>
-        <div class="result-box" id="resultText"></div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-outline btn-sm" onclick="copyResult()" style="flex:1;">📋 复制脚本</button>
-          <button class="btn btn-primary btn-sm" onclick="resetAndNew()" style="flex:1;">🔄 再拆一条</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Actions -->
-    <div class="bottom-actions" id="fillActions">
-      <button class="btn btn-outline" onclick="goSkeleton()">← 回去看拆解</button>
-      <button class="btn btn-outline" onclick="resetAndNew()">🔄 再拆一条</button>
-    </div>
-  </div>
-
   <!-- Loading -->
   <div class="screen" id="screen-loading">
     <div class="loading">
@@ -679,10 +605,7 @@
 <script>
 // ===== State =====
 let dnaData = null;         // Full DNA analysis result from /api/analyze
-let strategyData = null;    // Strategy card result from /api/create-framework
 let currentScreen = 'landing';
-let savedTheme = '';
-let savedIdeas = '';
 
 // ===== Navigation =====
 function showScreen(name) {
@@ -702,37 +625,6 @@ function startCreate() {
   updateHistoryBadge();
 }
 function goPaste() { showScreen('paste'); updateHistoryBadge(); document.getElementById('batchToggleRow').style.display = 'none'; }
-function goSkeleton() { showScreen('skeleton'); renderSkeleton(); updateBatchUI(); }
-function goFill() {
-  showScreen('fill');
-  strategyData = null;
-  savedTheme = '';
-  savedIdeas = '';
-  document.getElementById('themeInput').value = '';
-  document.getElementById('ideaInput').value = '';
-  document.getElementById('strategyCard').style.display = 'none';
-  document.getElementById('resultBox').style.display = 'none';
-  document.getElementById('genLoading').style.display = 'none';
-}
-
-function resetAndNew() {
-  dnaData = null;
-  strategyData = null;
-  savedTheme = '';
-  savedIdeas = '';
-  document.getElementById('scriptInput').value = '';
-  document.getElementById('metaTitle').value = '';
-  document.getElementById('metaDesc').value = '';
-  document.getElementById('metaTags').value = '';
-  document.getElementById('themeInput').value = '';
-  document.getElementById('ideaInput').value = '';
-  document.getElementById('resultBox').style.display = 'none';
-  document.getElementById('strategyCard').style.display = 'none';
-  document.getElementById('genLoading').style.display = 'none';
-  showScreen('paste');
-  updateHistoryBadge();
-  showToast('🔄 来，拆一条新的');
-}
 
 function updateSteps() {
   const steps = document.querySelectorAll('.step');
@@ -1061,137 +953,6 @@ function renderSkeleton() {
   const toggleRow = document.getElementById('batchToggleRow');
   toggleRow.style.display = 'flex';
   syncToggleState();
-}
-
-// ===== API: Preview Strategy =====
-async function previewStrategy() {
-  const theme = document.getElementById('themeInput').value.trim();
-  const ideas = document.getElementById('ideaInput').value.trim();
-
-  if (!theme || theme.length < 4) {
-    showToast('⚠️ 请多写一点你的创作主题（至少4个字）');
-    document.getElementById('themeInput').focus();
-    return;
-  }
-
-  if (!dnaData) {
-    showError('请先分析一条爆款脚本');
-    return;
-  }
-
-  savedTheme = theme;
-  savedIdeas = ideas;
-  const btn = document.getElementById('btnPreview');
-  btn.disabled = true;
-  btn.textContent = '分析中...';
-
-  try {
-    const res = await fetch('/api/create-framework', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        theme: theme,
-        ideas: ideas,
-        dna: dnaData.dna,
-        skeleton: dnaData.skeleton,
-        topic: dnaData.topic,
-        angle: dnaData.angle,
-        advice: dnaData.advice
-      })
-    });
-
-    if (!res.ok) {
-      if (res.status === 401) { showToast('⚠️ 服务错误，请稍后重试'); return; }
-      const err = await res.json();
-      throw new Error(err.error || '分析失败');
-    }
-
-    const data = await res.json();
-    strategyData = data.strategy;
-
-    // Render strategy card
-    document.getElementById('sContentType').textContent = strategyData.contentType || '-';
-    document.getElementById('sStructure').textContent = strategyData.matchedStructure || '-';
-    document.getElementById('sViewpoint').textContent = strategyData.coreViewpoint || '-';
-    document.getElementById('sDirection').textContent = strategyData.scriptDirection || '-';
-    document.getElementById('strategyCard').style.display = 'block';
-    document.getElementById('resultBox').style.display = 'none';
-    document.getElementById('genLoading').style.display = 'none';
-    document.getElementById('strategyCard').scrollIntoView({ behavior: 'smooth' });
-
-    showToast('✅ 策略确认，点击按钮生成脚本');
-  } catch (err) {
-    showToast('⚠️ ' + (err.message || '分析失败，重试一下'));
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '🐱 分析创作方向';
-  }
-}
-
-// ===== API: Generate My Script =====
-async function generateMyScript() {
-  if (!strategyData) {
-    showError('请先分析创作方向');
-    return;
-  }
-
-  const btn = document.getElementById('btnGenerate');
-  btn.disabled = true;
-  btn.textContent = '生成中...';
-  document.getElementById('genLoading').style.display = 'block';
-  document.getElementById('genLoading').scrollIntoView({ behavior: 'smooth' });
-
-  try {
-    const res = await fetch('/api/generate-script', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        theme: savedTheme,
-        ideas: savedIdeas,
-        dna: dnaData.dna,
-        skeleton: dnaData.skeleton,
-        topic: dnaData.topic,
-        angle: dnaData.angle,
-        advice: dnaData.advice
-      })
-    });
-
-    if (!res.ok) {
-      if (res.status === 401) { showToast('⚠️ 服务错误，请稍后重试'); return; }
-      const err = await res.json();
-      throw new Error(err.error || '生成失败');
-    }
-
-    const data = await res.json();
-    document.getElementById('genLoading').style.display = 'none';
-    document.getElementById('resultText').textContent = data.script;
-    document.getElementById('resultBox').style.display = 'block';
-    document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
-    showToast('🎉 脚本已生成，检查一下再复制');
-  } catch (err) {
-    document.getElementById('genLoading').style.display = 'none';
-    showToast('⚠️ ' + (err.message || '生成失败，重试一下'));
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '🚀 生成我的爆款脚本';
-  }
-}
-
-// ===== Copy =====
-async function copyResult() {
-  const text = document.getElementById('resultText').textContent;
-  try {
-    await navigator.clipboard.writeText(text);
-    showToast('✅ 脚本已复制，去拍视频吧！');
-  } catch {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('✅ 脚本已复制，去拍视频吧！');
-  }
 }
 
 // ===== Example =====
