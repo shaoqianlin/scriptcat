@@ -1,0 +1,15 @@
+{
+  "name": "jiaobenmao",
+  "version": "1.0.0",
+  "description": "脚本猫 - 爆款脚本拆解 + 生成爆款脚本",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.18.2"
+  }
+}

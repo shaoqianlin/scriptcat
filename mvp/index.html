@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="爆款猫">
+<meta name="theme-color" content="#2563EB">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<title>爆款猫 · 拆解爆款结构，优化标题文案</title>
+<style>
+  :root {
+    --primary: #2563EB;
+    --primary-light: #3B82F6;
+    --primary-lighter: #60A5FA;
+    --bg: #EFF6FF;
+    --card: #FFFFFF;
+    --text: #1E293B;
+    --sub: #64748B;
+    --gradient: linear-gradient(135deg, #3B82F6, #60A5FA);
+    --border: #DBEAFE;
+    --shadow: 0 2px 24px rgba(37,99,235,0.06);
+    --radius: 20px;
+    --danger: #EF4444;
+    --safe-bottom: env(safe-area-inset-bottom, 16px);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; min-height: -webkit-fill-available;
+    -webkit-font-smoothing: antialiased; font-size: 16px; line-height: 1.6;
+    overflow-x: hidden;
+  }
+  .app { max-width: 480px; margin: 0 auto; padding: calc(24px + env(safe-area-inset-top, 0px)) 20px var(--safe-bottom); }
+
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 4px 0 20px; }
+  .header-left { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .header-logo-row { display: flex; align-items: center; gap: 4px; }
+  .header .logo { font-size: 36px; line-height: 1; }
+  .header h1 { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+  .header .tagline { font-size: 13px; color: var(--sub); margin-top: 2px; }
+  .btn-history { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--border); background: var(--card); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
+  .btn-history:active { background: #DBEAFE; }
+  .btn-history .badge { position: absolute; top: -4px; right: -4px; background: var(--danger); color: #fff; font-size: 11px; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; display: none; }
+  .btn-history .badge.show { display: flex; }
+  .header-right { display: flex; gap: 8px; }
+  .user-badge { background: #22C55E !important; min-width: 12px !important; width: 12px; height: 12px; border-radius: 6px; }
+
+  /* Cards */
+  .card { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 24px; border: 1px solid var(--border); }
+
+  /* Steps */
+  .steps { display: none; align-items: center; margin-bottom: 24px; padding: 0 4px; }
+  .steps.visible { display: flex; }
+  .step { padding: 12px 14px; border-radius: 14px; font-size: 13px; font-weight: 600; text-align: center; white-space: nowrap; transition: all 0.4s ease; background: #fff; color: #94A3B8; border: 2px solid #E2E8F0; flex-shrink: 0; min-height: 44px; display: inline-flex; align-items: center; }
+  .step.active { background: var(--gradient); color: #fff; font-weight: 700; border-color: transparent; box-shadow: 0 2px 12px rgba(37,99,235,0.3); transform: scale(1.05); }
+  .step.done { background: #DBEAFE; color: var(--primary); font-weight: 700; border-color: var(--primary-light); }
+  .step-connector { flex: 1; height: 3px; background: #E2E8F0; margin: 0 6px; border-radius: 3px; transition: background 0.4s ease; min-width: 16px; position: relative; }
+  .step-connector::after { content: '▶'; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); font-size: 8px; color: #CBD5E1; transition: color 0.4s ease; }
+  .step-connector.filled { background: var(--primary-light); }
+  .step-connector.filled::after { color: var(--primary); }
+
+  /* Screen visibility */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* Textarea */
+  textarea {
+    width: 100%; min-height: 150px; border: 2px solid var(--border); border-radius: 16px;
+    padding: 16px; font-size: 16px; font-family: inherit; line-height: 1.8;
+    resize: vertical; color: var(--text); background: #F8FAFC;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+  textarea::placeholder { color: #94A3B8; font-size: 14px; }
+
+  /* Buttons */
+  .btn {
+    display: block; width: 100%; padding: 16px; border: none; border-radius: 16px;
+    font-size: 16px; font-weight: 700; cursor: pointer; text-align: center;
+    transition: all 0.2s; font-family: inherit; letter-spacing: 0.2px;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 4px 20px rgba(37,99,235,0.25); }
+  .btn-primary:active { box-shadow: 0 2px 8px rgba(37,99,235,0.15); }
+  .btn-outline { background: #fff; color: var(--primary); border: 2px solid var(--border); }
+  .btn-outline:active { background: #DBEAFE; border-color: var(--primary-light); }
+  .btn-sm { padding: 12px 20px; font-size: 14px; width: auto; display: inline-flex; align-items: center; justify-content: center; border-radius: 14px; min-height: 44px; }
+
+  /* Platform tags */
+  .platform-tags { display: flex; gap: 8px; margin-top: 12px; justify-content: center; }
+  .platform-tag { background: #DBEAFE; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+
+  /* Section label & divider */
+  .section-label { font-size: 14px; font-weight: 700; color: var(--sub); margin-bottom: 8px; }
+  .section-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; color: #94A3B8; font-size: 13px; }
+  .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* Meta fields */
+  .meta-input { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; font-family: inherit; background: #F8FAFC; margin-bottom: 8px; box-sizing: border-box; }
+  .meta-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+  .meta-input::placeholder { color: #94A3B8; font-size: 13px; }
+  .meta-textarea { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 12px; font-size: 13px; font-family: inherit; background: #F8FAFC; resize: vertical; min-height: 40px; margin-bottom: 8px; box-sizing: border-box; }
+  .meta-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+  .meta-textarea::placeholder { color: #94A3B8; font-size: 12px; }
+
+  /* Step cards */
+  .step-card { position: relative; padding-top: 28px; }
+  .step-badge {
+    position: absolute; top: -12px; left: 16px;
+    background: var(--primary); color: #fff;
+    padding: 4px 14px; border-radius: 12px;
+    font-size: 13px; font-weight: 700;
+  }
+  .step-badge.basic { background: #F59E0B; }
+  .step-hint {
+    font-size: 13px; color: var(--sub); margin-top: 10px;
+    background: #F0F9FF; padding: 8px 12px; border-radius: 10px;
+    border: 1px solid #BAE6FD;
+  }
+
+  /* Depth indicator */
+  .depth-bar {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; padding: 8px 12px;
+    background: #F9FAFB; border-radius: 10px;
+    font-size: 13px;
+  }
+  .depth-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #D1D5DB; flex-shrink: 0;
+  }
+  .depth-dot.basic { background: #F59E0B; }
+  .depth-dot.deep { background: #10B981; }
+  .depth-text { color: var(--sub); }
+
+  /* Cat hero */
+  .cat-hero { text-align: center; padding: 20px 16px 28px; }
+  .cat-hero .cat-emoji { font-size: 64px; display: block; margin-bottom: 12px; line-height: 1; }
+  .cat-hero .hero-title { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1.6; }
+  .cat-hero .hero-sub { font-size: 14px; color: var(--sub); margin-top: 6px; }
+
+  /* Page title */
+  .page-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 4px; letter-spacing: -0.5px; }
+  .page-subtitle { font-size: 15px; color: var(--sub); margin-bottom: 20px; }
+
+  /* ===== Skeleton Breakdown (Screen 2) ===== */
+  .skel-block { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .skel-block:last-child { border-bottom: none; margin-bottom: 0; }
+  .skel-role { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+  .skel-func { font-size: 14px; color: var(--sub); margin-bottom: 8px; line-height: 1.6; }
+  .skel-original { background: #F8FAFC; padding: 14px 16px; border-radius: 12px; font-size: 14px; line-height: 1.7; color: #475569; border: 1px solid var(--border); }
+
+  /* Why viral banner */
+  .why-viral-banner {
+    background: linear-gradient(135deg, #FFF7ED, #FFFBEB);
+    border: 2px solid #FBBF24; border-radius: 16px;
+    padding: 20px; margin-bottom: 20px;
+  }
+  .why-viral-banner .wv-title { font-size: 17px; font-weight: 800; margin-bottom: 10px; color: #D97706; }
+  .why-viral-banner .wv-text { font-size: 15px; line-height: 1.8; color: #78350F; }
+
+  /* DNA Mini Cards */
+  .dna-mini-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .dna-mini { background: var(--card); border-radius: 14px; padding: 14px; border: 1px solid var(--border); }
+  .dna-mini-icon { font-size: 20px; margin-bottom: 4px; }
+  .dna-mini-label { font-size: 12px; color: var(--sub); font-weight: 600; }
+  .dna-mini-value { font-size: 14px; font-weight: 700; color: var(--text); margin-top: 2px; }
+
+  /* ===== Fill Framework (Screen 3) ===== */
+  .fill-structure-badge { display: inline-block; background: #DBEAFE; color: var(--primary); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-bottom: 20px; }
+  .fill-block { position: relative; }
+  .fill-card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 0; box-shadow: var(--shadow); border: 1px solid var(--border); border-left: 4px solid transparent; }
+  .fill-card.odd { border-left-color: var(--primary); }
+  .fill-card.even { border-left-color: var(--primary-lighter); }
+  .fill-label { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .fill-label .step-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  .fill-label .step-num.odd { background: #DBEAFE; color: var(--primary); }
+  .fill-label .step-num.even { background: #EFF6FF; color: #2563EB; }
+  .fill-why { font-size: 13px; color: var(--primary); background: #EFF6FF; padding: 8px 12px; border-radius: 10px; margin-bottom: 8px; line-height: 1.6; }
+  .fill-why::before { content: '💡 '; }
+  .fill-hint { font-size: 14px; color: var(--text); background: #F8FAFC; padding: 14px 16px; border-radius: 12px; margin-bottom: 8px; line-height: 1.8; white-space: pre-line; border: 1px solid var(--border); }
+  .fill-input { min-height: 80px; }
+  .fill-connector { display: flex; align-items: center; justify-content: center; padding: 6px 0; color: var(--sub); font-size: 13px; }
+  .fill-connector .arrow { font-size: 18px; color: #BFDBFE; margin: 0 8px; }
+  .fill-connector .connect-text { background: #EFF6FF; padding: 6px 16px; border-radius: 20px; max-width: 90%; text-align: center; font-weight: 500; color: var(--primary); }
+
+  /* AI row per slot */
+  .ai-row { margin-top: 10px; }
+  .ai-row-top { display: flex; gap: 6px; margin-bottom: 6px; }
+  .idea-input { flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-family: inherit; background: #F8FAFC; min-width: 0; min-height: 44px; }
+  .idea-input:focus { outline: none; border-color: var(--primary); }
+  .idea-input::placeholder { color: #94A3B8; font-size: 13px; }
+  .btn-ai { padding: 12px 16px; background: #EFF6FF; border: 1px solid #BFDBFE; color: var(--primary); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: inherit; flex-shrink: 0; min-height: 44px; }
+  .btn-ai:active { background: #DBEAFE; }
+  .btn-ai:disabled { opacity: 0.4; pointer-events: none; }
+  .btn-ai.suggesting { background: #DBEAFE; }
+  .btn-ai-direct { width: 100%; background: #fff; border: 1px dashed var(--border); color: var(--sub); text-align: center; min-height: 44px; }
+  .btn-ai-direct:active { background: #EFF6FF; }
+
+  /* Touch-friendly: prevent zoom and highlight on tap */
+  .btn, .btn-sm, .btn-ai, .btn-ai-direct, .btn-history, .step {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Theme input */
+  .theme-card { border: 2px solid var(--primary); background: #EFF6FF; }
+  .theme-input { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; font-size: 16px; font-family: inherit; background: #fff; }
+  .theme-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+  .theme-input::placeholder { color: #94A3B8; }
+
+  /* Classify result */
+  .classify-result {
+    background: #F0F9FF; border: 2px solid #BAE6FD; border-radius: 16px;
+    padding: 16px; margin: 16px 0;
+  }
+  .classify-result .cr-title { font-size: 14px; font-weight: 700; color: #0369A1; margin-bottom: 8px; }
+  .classify-row { display: flex; gap: 8px; margin-bottom: 4px; font-size: 14px; align-items: baseline; }
+  .classify-label { color: var(--sub); flex-shrink: 0; font-weight: 600; }
+  .classify-value { color: var(--text); font-weight: 600; }
+
+  /* Strategy Card */
+  .strategy-card { border: 2px solid var(--primary); background: #EFF6FF; }
+  .strategy-header { font-size: 17px; font-weight: 800; color: var(--primary); margin-bottom: 16px; text-align: center; }
+  .strategy-row { display: flex; gap: 10px; margin-bottom: 10px; font-size: 15px; align-items: baseline; padding: 10px 14px; background: #fff; border-radius: 12px; border: 1px solid var(--border); }
+  .strategy-label { color: var(--sub); font-weight: 700; flex-shrink: 0; min-width: 80px; font-size: 13px; }
+  .strategy-value { color: var(--text); font-weight: 600; }
+
+  /* Result */
+  .result-box { background: #F8FAFC; border-radius: 16px; padding: 20px; font-size: 15px; line-height: 1.9; white-space: pre-wrap; margin-bottom: 16px; border: 1px solid var(--border); }
+
+  /* Loading */
+  .loading { text-align: center; padding: 80px 0; }
+  .spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 24px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading p { font-size: 16px; color: var(--sub); }
+
+  /* Error */
+  .error { background: #FEF2F2; color: var(--danger); padding: 14px 18px; border-radius: 14px; font-size: 15px; text-align: center; margin-bottom: 14px; line-height: 1.6; border: 1px solid #FECACA; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom, 16px)); left: 50%; transform: translateX(-50%); background: #1E293B; color: #fff; padding: 14px 28px; border-radius: 28px; font-size: 15px; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+  .toast.show { opacity: 1; }
+
+  /* Bottom actions */
+  .bottom-actions { margin-top: 24px; }
+  .bottom-actions .btn { margin-bottom: 10px; }
+
+  .example-link { text-align: center; margin-top: 16px; }
+  .example-link a { color: var(--sub); font-size: 14px; text-decoration: underline; cursor: pointer; }
+
+  /* Landing */
+  .landing-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; text-align: center; padding: 40px 20px; }
+  .landing-logo { font-size: 100px; display: block; line-height: 1; margin-bottom: 24px; animation: catBounce 1.5s ease infinite; }
+  @keyframes catBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+  /* Bubble Slogan */
+  .bubble-slogan {
+    display: inline-block;
+    position: relative;
+    background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 40%, #93C5FD 100%);
+    padding: 24px 32px;
+    border-radius: 40px;
+    box-shadow:
+      0 8px 32px rgba(37, 99, 235, 0.18),
+      0 2px 8px rgba(37, 99, 235, 0.10),
+      inset 0 1px 0 rgba(255,255,255,0.6);
+    margin-bottom: 20px;
+    animation: bubblePop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+               bubbleFloat 3s ease-in-out 0.7s infinite;
+    max-width: 90%;
+  }
+  /* Speech bubble tail */
+  .bubble-slogan::after {
+    content: '';
+    position: absolute;
+    bottom: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 16px solid #BFDBFE;
+  }
+  .bubble-slogan .slogan-text {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1E40AF;
+    line-height: 1.5;
+    letter-spacing: 1.5px;
+  }
+  @keyframes bubblePop {
+    0% { transform: scale(0.3); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    80% { transform: scale(0.96); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes bubbleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .landing-sub { font-size: 16px; color: var(--sub); margin-bottom: 40px; }
+
+
+  /* Tips */
+  .tips-box { background: #F0F9FF; border-radius: 14px; padding: 16px; margin-bottom: 18px; border: 1px solid #BAE6FD; }
+  .tips-box .tips-title { font-size: 14px; font-weight: 700; color: #0369A1; margin-bottom: 8px; }
+  .tips-box .tips-list { font-size: 13px; color: #0C4A6E; line-height: 1.8; padding-left: 18px; }
+
+  /* History Modal */
+  .history-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: none; align-items: flex-end; justify-content: center; overscroll-behavior: contain; }
+  .history-overlay.show { display: flex; }
+  .history-panel { background: #fff; border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; max-height: 70vh; overflow-y: auto; padding: 24px 20px calc(40px + env(safe-area-inset-bottom, 0px)); animation: slideUp 0.3s ease; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .history-panel h3 { font-size: 20px; font-weight: 700; margin-bottom: 16px; text-align: center; }
+  .history-item { background: #F8FAFC; border-radius: 16px; padding: 16px; margin-bottom: 10px; cursor: pointer; transition: background 0.2s; border: 1px solid var(--border); }
+  .history-item:active { background: #EFF6FF; }
+  .history-preview { font-size: 16px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .history-meta { font-size: 13px; color: var(--sub); margin-top: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .history-delete { color: #94A3B8; font-size: 20px; cursor: pointer; padding: 0; background: none; border: none; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  .history-empty { text-align: center; padding: 40px 0; color: var(--sub); font-size: 16px; }
+
+  /* Auth Modal */
+  .auth-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 1001; display: none; align-items: center; justify-content: center; overscroll-behavior: contain; }
+  .auth-overlay.show { display: flex; }
+  .auth-panel { background: #fff; border-radius: 20px; width: 100%; max-width: 360px; margin: 0 24px; padding: 24px 20px; animation: slideUp 0.3s ease; box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+  .auth-panel h3 { font-size: 20px; font-weight: 700; margin-bottom: 16px; text-align: center; }
+  .auth-input { width: 100%; border: 2px solid var(--border); border-radius: 14px; padding: 12px 14px; font-size: 16px; margin-bottom: 10px; background: #F8FAFC; color: var(--text); }
+  .auth-input:focus { border-color: var(--primary-light); outline: none; background: #fff; }
+  .auth-switch { text-align: center; margin-top: 14px; font-size: 14px; color: var(--sub); }
+  .auth-switch a { color: var(--primary); font-weight: 600; cursor: pointer; }
+  .auth-user { text-align: center; font-size: 16px; color: var(--text); padding: 4px 0; }
+
+  /* ===== Mobile Responsive ===== */
+  @media (max-width: 400px) {
+    .app { padding: calc(16px + env(safe-area-inset-top, 0px)) 12px var(--safe-bottom); }
+    .header { padding: 2px 0 14px; }
+    .header .logo { font-size: 28px; }
+    .header h1 { font-size: 18px; }
+    .header .tagline { font-size: 11px; }
+    .landing-logo { font-size: 72px; margin-bottom: 16px; }
+    .landing-screen { min-height: 60vh; padding: 24px 8px; }
+    .bubble-slogan { padding: 18px 20px; border-radius: 28px; margin-bottom: 16px; }
+    .bubble-slogan .slogan-text { font-size: 22px; letter-spacing: 0.5px; }
+    .landing-sub { font-size: 14px; margin-bottom: 24px; }
+    .auth-section { max-width: 100%; }
+    .steps { margin-bottom: 16px; padding: 0; }
+    .step { padding: 10px 8px; font-size: 11px; border-radius: 10px; }
+    .step-connector { margin: 0 2px; min-width: 8px; }
+    .card { padding: 16px; margin-bottom: 16px; border-radius: 16px; }
+    textarea { min-height: 120px; padding: 12px; font-size: 15px; }
+    .btn { padding: 14px; font-size: 15px; }
+    .cat-hero { padding: 12px 4px 20px; }
+    .cat-hero .cat-emoji { font-size: 48px; }
+    .cat-hero .hero-title { font-size: 16px; }
+    .page-title { font-size: 18px; }
+    .page-subtitle { font-size: 14px; }
+    .dna-mini-row { gap: 8px; }
+    .dna-mini { padding: 12px; }
+    .fill-card { padding: 16px; }
+    .why-viral-banner { padding: 16px; }
+    .why-viral-banner .wv-title { font-size: 15px; }
+    .why-viral-banner .wv-text { font-size: 14px; }
+    .result-box { padding: 16px; font-size: 14px; }
+    .history-panel { padding: 20px 14px calc(36px + env(safe-area-inset-bottom, 0px)); }
+  }
+
+  @media (max-width: 360px) {
+    .bubble-slogan .slogan-text { font-size: 19px; }
+    .landing-logo { font-size: 60px; }
+    .ai-row-top { flex-direction: column; gap: 6px; }
+    .btn-ai { text-align: center; }
+    .steps { gap: 0; }
+    .step { padding: 8px 6px; font-size: 10px; }
+  }
+
+  /* Batch queue */
+  .batch-bar { position: sticky; bottom: 16px; background: var(--card); border: 2px solid var(--primary); border-radius: 16px; padding: 14px 18px; margin: 16px 0; box-shadow: 0 4px 20px rgba(37,99,235,0.15); display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 10; }
+  .batch-bar .batch-info { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--primary); font-size: 15px; }
+  .batch-bar .batch-info .count { background: var(--gradient); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+  .batch-bar .batch-hint-icon { font-size: 18px; flex-shrink: 0; }
+  .batch-bar .batch-hint-text { font-weight: 500; color: var(--sub); font-size: 13px; }
+  .batch-bar.has-items { border-color: var(--primary); }
+  .batch-bar.has-items .batch-hint-text { color: var(--primary); font-weight: 700; font-size: 14px; }
+  .btn-synth { background: var(--gradient); color: #fff; border: none; padding: 10px 20px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .btn-synth:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-synth-small { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn-synth-small:disabled { opacity: 0.5; }
+  .batch-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding: 12px 16px; background: var(--card); border: 1px solid #E2E8F0; border-radius: 14px; }
+  .toggle-label { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+  .toggle-label input { display: none; }
+  .toggle-track { width: 44px; height: 24px; background: #CBD5E1; border-radius: 12px; position: relative; transition: background 0.2s; flex-shrink: 0; }
+  .toggle-label input:checked + .toggle-track { background: var(--primary); }
+  .toggle-thumb { width: 18px; height: 18px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .toggle-label input:checked + .toggle-track .toggle-thumb { transform: translateX(20px); }
+  .toggle-text { font-size: 14px; font-weight: 600; color: var(--text); }
+  .btn-export-single { background: #fff; color: var(--primary); border: 2px solid var(--primary-light); padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .btn-export-single:hover { background: #EEF2FF; }
+  .batch-panel { margin-top: 16px; background: var(--card); border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; }
+  .batch-panel-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; flex-wrap: wrap; }
+  .batch-panel-title { font-weight: 700; font-size: 14px; color: var(--text); }
+  .batch-panel-count { font-size: 13px; color: var(--sub); background: #EEF2FF; padding: 2px 10px; border-radius: 10px; }
+  .batch-panel-actions { display: flex; gap: 6px; margin-left: auto; }
+  .batch-select-btn { background: #fff; border: 1px solid #CBD5E1; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--sub); cursor: pointer; }
+  .batch-select-btn:hover { background: #EEF2FF; color: var(--primary); border-color: var(--primary-light); }
+  .batch-panel-list { padding: 8px 12px; max-height: 280px; overflow-y: auto; }
+  .batch-panel-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; margin-bottom: 4px; transition: background 0.15s; }
+  .batch-panel-item:hover { background: #F8FAFC; }
+  .batch-panel-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+  .batch-panel-item .item-preview { flex: 1; font-size: 13px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .batch-panel-item .item-type { font-size: 11px; padding: 2px 8px; border-radius: 8px; font-weight: 600; flex-shrink: 0; }
+  .batch-panel-item .item-type.deep { background: #D1FAE5; color: #059669; }
+  .batch-panel-item .item-type.basic { background: #FEF3C7; color: #B45309; }
+  .batch-panel-item .item-remove { cursor: pointer; font-size: 16px; color: #94A3B8; flex-shrink: 0; padding: 2px 6px; border-radius: 6px; }
+  .batch-panel-item .item-remove:hover { color: #EF4444; background: #FEE2E2; }
+
+  /* Synthesis result */
+  .synthesis-card { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 16px; border: 2px solid var(--primary); }
+  .synth-header { text-align: center; margin-bottom: 20px; }
+  .synth-header .icon { font-size: 40px; }
+  .synth-header .title { font-size: 20px; font-weight: 800; color: var(--text); margin: 8px 0; }
+  .synth-header .summary { font-size: 15px; color: var(--primary); font-weight: 600; }
+  .synth-section { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+  .synth-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .synth-section .s-label { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .synth-section .s-value { font-size: 14px; color: var(--sub); line-height: 1.6; }
+  .synth-section .s-tag { display: inline-block; background: #DBEAFE; color: var(--primary); padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin: 2px 4px 2px 0; }
+  .synth-section .s-insight { margin-top: 8px; padding: 10px 14px; background: #FFF7ED; border-radius: 10px; font-size: 13px; color: #C2410C; line-height: 1.5; }
+  .synth-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .synth-actions .btn { flex: 1; }
+</style>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo-row">
+        <span class="logo">🐱</span>
+        <h1>爆款猫</h1>
+      </div>
+      <div class="tagline" id="tagline">流量密码，喵一眼就懂</div>
+    </div>
+    <div class="header-right">
+      <button class="btn-history" id="btnUser" onclick="openAuthPanel()" title="登录/注册">
+        👤
+        <span class="badge user-badge" id="userBadge"></span>
+      </button>
+      <button class="btn-history" id="btnHistory" onclick="openHistoryPanel()" title="历史记录">
+        📋
+        <span class="badge" id="historyBadge">0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps" id="steps">
+    <div class="step active">🐱 投喂</div>
+    <div class="step-connector"></div>
+    <div class="step">🔍 拆解</div>
+  </div>
+
+  <!-- Error -->
+  <div class="error" id="error" style="display:none"></div>
+
+  <!-- ====== Screen 0: Landing ====== -->
+  <div class="screen active" id="screen-landing">
+    <div class="landing-screen">
+      <span class="landing-logo">🐱</span>
+      <div class="bubble-slogan">
+        <div class="slogan-text">流量密码<br>喵一眼就懂</div>
+      </div>
+
+      <button class="btn btn-primary" id="btnStartCreate" onclick="startCreate()" style="width:auto;padding:16px 48px;font-size:17px;">开始创作 ✨</button>
+
+      <div class="landing-sub">🐱 拆爆款脚本+标题+文案+标签，批量归纳流量密码</div>
+    </div>
+  </div>
+
+  <!-- ====== Screen 1: Paste ====== -->
+  <div class="screen" id="screen-paste">
+    <div class="cat-hero">
+      <span class="cat-emoji">🐱</span>
+      <div class="hero-title">投喂一个爆款<br>让我看看它为什么火</div>
+      <div class="hero-sub">贴脚本+标题+文案+标签，拆解爆款流量密码</div>
+    </div>
+
+    <!-- Script paste -->
+    <div class="card step-card" id="step2Card">
+      <div class="step-badge">深度拆解</div>
+      <div class="section-label">📝 粘贴完整脚本+标题+介绍文案，拆解爆款结构</div>
+      <input class="meta-input" id="metaTitle" placeholder="视频标题（选填）">
+      <textarea class="meta-textarea" id="metaDesc" placeholder="视频介绍文案（选填）&#10;就是视频下方那几句介绍文字..." rows="2"></textarea>
+      <input class="meta-input" id="metaTags" placeholder="标签（选填） 如：#心理学 #自我成长 #情绪管理">
+      <textarea id="scriptInput" placeholder="把博主从头到尾说的每句话粘贴进来...&#10;有完整脚本可以拆解：开头钩子怎么抓人、每段是什么结构、情绪怎么递进、为什么让人想看完" oninput="updateDepthIndicator()"></textarea>
+      <div class="depth-bar" id="depthBar">
+        <span class="depth-dot"></span>
+        <span class="depth-text" id="depthText">等待输入…</span>
+      </div>
+      <button class="btn btn-primary" id="btnAnalyze" onclick="analyze()" style="margin-top:14px;">
+        🐱 开始分析
+      </button>
+      <div class="example-link"><a onclick="loadExample()">不知道找什么？看看示例</a></div>
+    </div>
+
+    <div class="tips-box">
+      <div class="tips-title">💡 怎么用？</div>
+      <ol class="tips-list">
+        <li>填入标题+介绍文案+标签+完整脚本 → <b>一键深度拆解</b></li>
+        <li>AI分析：标题技巧、文案钩子、标签策略、脚本结构、情绪节奏</li>
+        <li>多条同主题拆解后 → <b>归纳总结</b>（找出共性规律）</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ====== Screen 2: 拆解爆点 ====== -->
+  <div class="screen" id="screen-skeleton">
+    <div class="page-title">🔍 拆解爆点</div>
+    <div class="page-subtitle">看看这条脚本每一段在做什么，为什么能火</div>
+
+    <!-- Why Viral Banner -->
+    <div class="why-viral-banner" id="whyViralBanner"></div>
+
+    <!-- DNA Mini Grid -->
+    <div class="dna-mini-row" id="dnaMiniGrid"></div>
+
+    <!-- Skeleton Breakdown -->
+    <div class="card" id="skeletonContent"></div>
+
+    <!-- Batch toggle + export row -->
+    <div class="batch-toggle-row" id="batchToggleRow" style="display:none;">
+      <label class="toggle-label" id="toggleBatchLabel">
+        <input type="checkbox" id="toggleBatch" checked onchange="toggleBatchItem()">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-text">纳入批量归纳</span>
+      </label>
+      <button class="btn-export-single" onclick="exportAnalysis()">📋 导出本条</button>
+    </div>
+
+    <!-- Batch multi-select panel (hidden when empty) -->
+    <div class="batch-panel" id="batchPanel" style="display:none;">
+      <div class="batch-panel-header">
+        <span class="batch-panel-title">📦 批量归纳队列</span>
+        <span class="batch-panel-count" id="batchPanelCount">0条</span>
+        <div class="batch-panel-actions">
+          <button class="batch-select-btn" onclick="selectAllBatch()">☑ 全选</button>
+          <button class="batch-select-btn" onclick="deselectAllBatch()">☐ 取消</button>
+        </div>
+      </div>
+      <div class="batch-panel-list" id="batchPanelList"></div>
+    </div>
+
+    <!-- Batch bar (always visible) -->
+    <div class="batch-bar" id="batchBar">
+      <div class="batch-info" id="batchInfo">
+        <span class="batch-hint-icon">📦</span>
+        <span class="batch-hint-text" id="batchHintText">分析2条以上同主题脚本后，可归纳共性规律</span>
+      </div>
+      <button class="btn-synth" id="btnSynthesize" onclick="synthesize()" disabled>🧬 归纳总结</button>
+    </div>
+
+    <!-- Synthesis result -->
+    <div class="synthesis-card" id="synthesisResult" style="display:none;"></div>
+
+    <!-- Synthesis loading -->
+    <div id="synthLoading" style="display:none; text-align:center; padding:40px 0;">
+      <div class="spinner"></div>
+      <p style="font-size:15px; color:var(--sub);">🐱 正在归纳共性规律...</p>
+    </div>
+
+    <div class="bottom-actions">
+      <button class="btn btn-outline" onclick="goPaste()">← 返回，再拆一条</button>
+      <button class="btn btn-outline" onclick="clearBatch()">🗑️ 清空队列</button>
+    </div>
+  </div>
+
+  <!-- ====== Screen 3: 生成我的爆款 ====== -->
+  <div class="screen" id="screen-fill">
+    <div class="page-title">✨ 生成我的爆款</div>
+    <div class="page-subtitle">基于爆款结构，生成属于你自己的爆款脚本</div>
+
+    <!-- Inputs -->
+    <div class="card">
+      <div class="section-label">🎯 我的主题</div>
+      <textarea class="theme-input" id="themeInput" placeholder="请输入你想创作的主题，例如：&#10;&#10;"大学生如何学习AI"&#10;"新手如何做小红书"&#10;"第一次创业踩坑经历"" style="min-height:100px;"></textarea>
+    </div>
+
+    <div class="card">
+      <div class="section-label">💡 我的想法</div>
+      <textarea class="theme-input" id="ideaInput" placeholder="告诉猫猫你的想法：&#10;&#10;你想表达什么？&#10;你的观点是什么？&#10;有没有自己的经历、案例、故事？&#10;&#10;例如：&#10;"我觉得很多大学生想学AI，但是不知道从哪里开始，而且容易被课程割韭菜。"" style="min-height:130px;"></textarea>
+      <button class="btn btn-primary" id="btnPreview" onclick="previewStrategy()" style="margin-top:14px;">
+        🐱 分析创作方向
+      </button>
+    </div>
+
+    <!-- Strategy Card -->
+    <div class="card strategy-card" id="strategyCard" style="display:none;">
+      <div class="strategy-header">🐱 爆款猫理解你的创作方向</div>
+      <div class="strategy-row"><span class="strategy-label">内容类型</span><span class="strategy-value" id="sContentType">-</span></div>
+      <div class="strategy-row"><span class="strategy-label">匹配爆款结构</span><span class="strategy-value" id="sStructure">-</span></div>
+      <div class="strategy-row"><span class="strategy-label">核心观点</span><span class="strategy-value" id="sViewpoint">-</span></div>
+      <div class="strategy-row"><span class="strategy-label">脚本方向</span><span class="strategy-value" id="sDirection">-</span></div>
+      <button class="btn btn-primary" id="btnGenerate" onclick="generateMyScript()" style="margin-top:16px;">
+        🚀 生成我的爆款脚本
+      </button>
+    </div>
+
+    <!-- Loading (reuse for generation) -->
+    <div id="genLoading" style="display:none; text-align:center; padding:40px 0;">
+      <div class="spinner"></div>
+      <p style="font-size:15px; color:var(--sub);">🐱 正在生成你的爆款脚本...</p>
+    </div>
+
+    <!-- Result -->
+    <div id="resultBox" style="display:none">
+      <div class="card">
+        <div class="page-title" style="font-size:18px;">🎉 你的爆款脚本</div>
+        <div class="page-subtitle">AI基于爆款结构和你的想法生成，检查一下再复制</div>
+        <div class="result-box" id="resultText"></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="copyResult()" style="flex:1;">📋 复制脚本</button>
+          <button class="btn btn-primary btn-sm" onclick="resetAndNew()" style="flex:1;">🔄 再拆一条</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="bottom-actions" id="fillActions">
+      <button class="btn btn-outline" onclick="goSkeleton()">← 回去看拆解</button>
+      <button class="btn btn-outline" onclick="resetAndNew()">🔄 再拆一条</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="screen" id="screen-loading">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p id="loadingText">🐱 正在拆解爆款结构...</p>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- History Modal -->
+  <div class="history-overlay" id="historyOverlay" onclick="closeHistoryPanel(event)">
+    <div class="history-panel" id="historyPanel" onclick="event.stopPropagation()">
+      <h3>📋 历史记录</h3>
+      <div id="historyList"></div>
+      <div class="history-empty" id="historyEmpty" style="display:none">还没有拆解记录，去拆一条试试吧～</div>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div class="auth-overlay" id="authOverlay" onclick="closeAuthPanel(event)">
+    <div class="auth-panel" id="authPanel" onclick="event.stopPropagation()">
+      <h3 id="authTitle">👤 登录</h3>
+      <div id="authForm">
+        <input class="auth-input" id="authUsername" placeholder="用户名（2-20字符）" autocomplete="username">
+        <input class="auth-input" id="authPassword" type="password" placeholder="密码（至少6位）" autocomplete="current-password">
+        <button class="btn btn-primary" id="authSubmit" onclick="submitAuth()" style="width:100%;margin-top:6px;">登录</button>
+        <div class="auth-switch">还没有账号？<a onclick="toggleAuthMode()">立即注册</a></div>
+      </div>
+      <div id="authLoggedIn" style="display:none;">
+        <div class="auth-user" id="authUserName"></div>
+        <button class="btn btn-outline" onclick="doLogout()" style="width:100%;margin-top:14px;">退出登录</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+// ===== State =====
+let dnaData = null;         // Full DNA analysis result from /api/analyze
+let strategyData = null;    // Strategy card result from /api/create-framework
+let currentScreen = 'landing';
+let savedTheme = '';
+let savedIdeas = '';
+
+// ===== Navigation =====
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + name);
+  if (target) target.classList.add('active');
+  else console.error('Screen not found: screen-' + name);
+  currentScreen = name;
+  document.getElementById('steps').classList.toggle('visible', name !== 'landing');
+  updateSteps();
+  hideError();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function startCreate() {
+  showScreen('paste');
+  updateHistoryBadge();
+}
+function goPaste() { showScreen('paste'); updateHistoryBadge(); document.getElementById('batchToggleRow').style.display = 'none'; }
+function goSkeleton() { showScreen('skeleton'); renderSkeleton(); updateBatchUI(); }
+function goFill() {
+  showScreen('fill');
+  strategyData = null;
+  savedTheme = '';
+  savedIdeas = '';
+  document.getElementById('themeInput').value = '';
+  document.getElementById('ideaInput').value = '';
+  document.getElementById('strategyCard').style.display = 'none';
+  document.getElementById('resultBox').style.display = 'none';
+  document.getElementById('genLoading').style.display = 'none';
+}
+
+function resetAndNew() {
+  dnaData = null;
+  strategyData = null;
+  savedTheme = '';
+  savedIdeas = '';
+  document.getElementById('scriptInput').value = '';
+  document.getElementById('metaTitle').value = '';
+  document.getElementById('metaDesc').value = '';
+  document.getElementById('metaTags').value = '';
+  document.getElementById('themeInput').value = '';
+  document.getElementById('ideaInput').value = '';
+  document.getElementById('resultBox').style.display = 'none';
+  document.getElementById('strategyCard').style.display = 'none';
+  document.getElementById('genLoading').style.display = 'none';
+  showScreen('paste');
+  updateHistoryBadge();
+  showToast('🔄 来，拆一条新的');
+}
+
+function updateSteps() {
+  const steps = document.querySelectorAll('.step');
+  const connectors = document.querySelectorAll('.step-connector');
+  steps.forEach(s => s.classList.remove('active', 'done'));
+  connectors.forEach(c => c.classList.remove('filled'));
+  if (currentScreen === 'paste') steps[0].classList.add('active');
+  if (currentScreen === 'skeleton') { steps[0].classList.add('done'); steps[1].classList.add('active'); if (connectors[0]) connectors[0].classList.add('filled'); }
+}
+
+// ===== Error / Toast =====
+function showError(msg) {
+  const el = document.getElementById('error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideError() { document.getElementById('error').style.display = 'none'; }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ===== API: Analyze =====
+async function analyze() {
+  const script = document.getElementById('scriptInput').value.trim();
+  if (script.length < 10) {
+    showError('内容太短了～至少10个字');
+    return;
+  }
+
+  const title = document.getElementById('metaTitle').value.trim();
+  const desc = document.getElementById('metaDesc').value.trim();
+  const tags = document.getElementById('metaTags').value.trim();
+
+  const isDeep = script.length >= 200;
+  showScreen('loading');
+  document.getElementById('loadingText').textContent = isDeep
+    ? '🐱 正在深度拆解爆款结构...'
+    : '🐱 正在分析选题方向...';
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ script, title, desc, tags })
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) { showToast('⚠️ 服务错误，请稍后重试'); return; }
+      const err = await res.json();
+      throw new Error(err.error || '请求失败');
+    }
+
+    dnaData = await res.json();
+    dnaData._meta = { title, desc, tags };
+    saveHistory(script, dnaData);
+    showScreen('skeleton');
+    renderSkeleton();
+    // Auto-add to batch queue
+    addToBatch(true);
+  } catch (err) {
+    showScreen('paste');
+    showError(err.message || '拆解失败，请重试');
+  }
+}
+
+// 输入变化时更新深度指示器
+function updateDepthIndicator() {
+  const len = document.getElementById('scriptInput').value.trim().length;
+  const dot = document.querySelector('.depth-dot');
+  const text = document.getElementById('depthText');
+  const badge = document.getElementById('step2Badge');
+  if (!dot || !text || !badge) return;
+  if (len >= 200) {
+    dot.className = 'depth-dot deep';
+    text.textContent = `已输入 ${len} 字 → 深度拆解：结构·节奏·钩子·情绪`;
+    badge.className = 'step-badge';
+  } else if (len >= 10) {
+    dot.className = 'depth-dot basic';
+    text.textContent = `已输入 ${len} 字 → 基础分析：选题·定位·标签（建议≥200字获得深度拆解）`;
+    badge.className = 'step-badge basic';
+  } else {
+    dot.className = 'depth-dot';
+    text.textContent = '等待输入…';
+    badge.className = 'step-badge';
+  }
+}
+
+// ===== Render Skeleton (Screen 2: 拆解爆点) =====
+function renderSkeleton() {
+  if (!dnaData) return;
+
+  const isDeep = dnaData.level === 'deep';
+
+  // Level badge
+  const wvDiv = document.getElementById('whyViralBanner');
+  if (dnaData.whyViral) {
+    wvDiv.style.display = 'block';
+    const levelTag = isDeep
+      ? '<span style="display:inline-block;background:#10B981;color:#fff;padding:2px 10px;border-radius:10px;font-size:12px;margin-left:8px;">深度拆解</span>'
+      : '<span style="display:inline-block;background:#F59E0B;color:#fff;padding:2px 10px;border-radius:10px;font-size:12px;margin-left:8px;">基础分析</span>';
+    wvDiv.innerHTML = `<div class="wv-title">🔥 ${isDeep ? '这条脚本为什么能爆' : '这个选题为什么能火'}${levelTag}</div><div class="wv-text">${escapeHtml(dnaData.whyViral)}</div>`;
+  } else {
+    wvDiv.style.display = 'none';
+  }
+
+  // ===== Deep analysis =====
+  if (isDeep) {
+    // DNA Mini Grid
+    const gridDiv = document.getElementById('dnaMiniGrid');
+    let gridHtml = '';
+    if (dnaData.dna) {
+      const d = dnaData.dna;
+      if (d.hook) {
+        gridHtml += `<div class="dna-mini"><div class="dna-mini-icon">🪝</div><div class="dna-mini-label">钩子类型</div><div class="dna-mini-value">${escapeHtml(d.hook.type || '')}</div></div>`;
+      }
+      if (d.formula) {
+        gridHtml += `<div class="dna-mini"><div class="dna-mini-icon">⚡</div><div class="dna-mini-label">爆款公式</div><div class="dna-mini-value">${escapeHtml(d.formula.name || '')}</div></div>`;
+      }
+      if (d.emotion && d.emotion.primary) {
+        gridHtml += `<div class="dna-mini"><div class="dna-mini-icon">💗</div><div class="dna-mini-label">核心情绪</div><div class="dna-mini-value">${escapeHtml(d.emotion.primary.slice(0,2).join('、'))}</div></div>`;
+      }
+      if (d.beatMap && d.beatMap.flow) {
+        gridHtml += `<div class="dna-mini"><div class="dna-mini-icon">🏗️</div><div class="dna-mini-label">节拍结构</div><div class="dna-mini-value">${escapeHtml(d.beatMap.flow.length + '拍递进')}</div></div>`;
+      }
+      if (d.styleTags) {
+        gridHtml += `<div class="dna-mini"><div class="dna-mini-icon">🎨</div><div class="dna-mini-label">风格</div><div class="dna-mini-value">${escapeHtml(d.styleTags.contentType || '')} / ${escapeHtml(d.styleTags.emotionTone || '')}</div></div>`;
+      }
+    }
+    gridDiv.innerHTML = gridHtml;
+
+    // Skeleton Breakdown
+    const container = document.getElementById('skeletonContent');
+    let html = '';
+
+    if (dnaData.techniques && dnaData.techniques.length > 0) {
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:8px;">💡 核心技巧</div>
+        ${dnaData.techniques.map(t => `<span style="display:inline-block;background:#FEF3C7;padding:6px 12px;border-radius:20px;font-size:14px;margin:0 6px 6px 0;">${escapeHtml(t)}</span>`).join('')}
+      </div>`;
+    }
+
+    // Title+Desc+Tags Analysis (deep)
+    if (dnaData.titleDescAnalysis) {
+      const tda = dnaData.titleDescAnalysis;
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:10px;">📺 标题+文案+标签分析</div>`;
+
+      if (tda.title) {
+        const ti = tda.title;
+        html += `<div style="background:#F0F9FF;padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid #BAE6FD;">
+          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">🔤 标题（吸引力：${'⭐'.repeat(Math.min(5, Math.max(1, Math.round((ti.score||5)/2))))}）</div>
+          <div style="font-size:13px;color:#1E40AF;">技巧：${escapeHtml(ti.technique || '')}</div>
+          <div style="font-size:13px;color:#047857;">✅ ${escapeHtml(ti.strength || '')}</div>
+          <div style="font-size:13px;color:#B45309;">💡 ${escapeHtml(ti.suggestion || '')}</div>
+        </div>`;
+      }
+      if (tda.description) {
+        const de = tda.description;
+        html += `<div style="background:#FEFCE8;padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid #FDE68A;">
+          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📝 介绍文案（吸引力：${'⭐'.repeat(Math.min(5, Math.max(1, Math.round((de.score||5)/2))))}）</div>
+          <div style="font-size:13px;color:#854D0E;">📌 ${escapeHtml(de.hook || '')}</div>
+          <div style="font-size:13px;color:#047857;">✅ ${escapeHtml(de.strength || '')}</div>
+          <div style="font-size:13px;color:#B45309;">💡 ${escapeHtml(de.suggestion || '')}</div>
+        </div>`;
+      }
+      if (tda.tags) {
+        const ta = tda.tags;
+        html += `<div style="background:#F3E8FF;padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid #D8B4FE;">
+          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">🏷️ 标签策略</div>
+          <div style="font-size:13px;color:#6B21A8;">现有：${(ta.existing||[]).map(t => '<span style="background:#EDE9FE;padding:1px 8px;border-radius:10px;margin:0 3px;">#' + escapeHtml(t) + '</span>').join('')}</div>
+          <div style="font-size:13px;color:#047857;">📊 ${escapeHtml(ta.cover || '')}</div>
+          ${ta.missing && ta.missing.length ? `<div style="font-size:13px;color:#DC2626;">⚠️ 缺失：${ta.missing.map(t => '#' + escapeHtml(t)).join('、')}</div>` : ''}
+          <div style="font-size:13px;color:#B45309;">💡 ${escapeHtml(ta.suggestion || '')}</div>
+        </div>`;
+      }
+      html += '</div>';
+    }
+
+    // Style Tags (deep)
+    if (dnaData.dna && dnaData.dna.styleTags) {
+      const st = dnaData.dna.styleTags;
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:8px;">🎨 风格标签</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span style="background:#E0E7FF;padding:4px 12px;border-radius:14px;font-size:13px;border:1px solid #C7D2FE;">🎬 ${escapeHtml(st.presentation || 'N/A')}</span>
+          <span style="background:#FCE7F3;padding:4px 12px;border-radius:14px;font-size:13px;border:1px solid #FBCFE8;">📂 ${escapeHtml(st.contentType || 'N/A')}</span>
+          <span style="background:#D1FAE5;padding:4px 12px;border-radius:14px;font-size:13px;border:1px solid #A7F3D0;">💭 ${escapeHtml(st.emotionTone || 'N/A')}</span>
+        </div>
+      </div>`;
+    }
+
+    // Hook Rewrite Tip
+    if (dnaData.dna && dnaData.dna.hook && dnaData.dna.hook.rewriteTip) {
+      html += `<div style="margin-bottom:18px;background:#FFF7ED;padding:12px 14px;border-radius:10px;border:1px solid #FED7AA;">
+        <span style="font-weight:700;font-size:14px;">🪝 钩子改写建议：</span><span style="font-size:14px;color:#9A3412;">${escapeHtml(dnaData.dna.hook.rewriteTip)}</span>
+      </div>`;
+    }
+
+    // Rewrite Directions (deep)
+    if (dnaData.rewriteDirections && dnaData.rewriteDirections.length > 0) {
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:10px;">✏️ 可借鉴的改写方向</div>`;
+      dnaData.rewriteDirections.forEach((r, i) => {
+        html += `<div style="background:#F8FAFC;padding:14px;border-radius:10px;border:1px solid #E2E8F0;margin-bottom:8px;">
+          <div style="font-weight:700;font-size:14px;margin-bottom:4px;">方向${i+1}：${escapeHtml(r.angle || '')} <span style="font-size:12px;color:var(--primary);background:#EEF2FF;padding:2px 8px;border-radius:8px;">${escapeHtml(r.suitablePlatform || '')}</span></div>
+          <div style="font-size:13px;color:var(--sub);">${escapeHtml(r.hookExample || '')}</div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
+    if (dnaData.skeleton && dnaData.skeleton.length > 0) {
+      html += `<div style="font-size:15px;font-weight:700;margin-bottom:12px;color:var(--sub);">📋 逐段拆解</div>`;
+      dnaData.skeleton.forEach((s, i) => {
+        html += `
+          <div class="skel-block">
+            <div class="skel-role">${i + 1}. ${escapeHtml(s.role)}</div>
+            <div class="skel-func">🧠 ${escapeHtml(s.psychology || '')}</div>
+            ${s.original && s.original !== '无' ? `<div class="skel-original">📝 ${escapeHtml(s.original)}</div>` : ''}
+            ${s.connect && i < dnaData.skeleton.length - 1 ? `<div style="font-size:13px;color:var(--primary);margin-top:4px;">↓ ${escapeHtml(s.connect)}</div>` : ''}
+          </div>`;
+      });
+    }
+
+    container.innerHTML = html || '<div style="text-align:center;color:var(--sub);padding:20px;">分析完成，点下方按钮继续</div>';
+
+  // ===== Basic analysis =====
+  } else {
+    document.getElementById('dnaMiniGrid').innerHTML = '';
+    const container = document.getElementById('skeletonContent');
+    let html = '<div style="padding:4px 0;">';
+
+    // Topic
+    if (dnaData.topic) {
+      const t = dnaData.topic;
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:8px;">🎯 选题判断</div>
+        <div style="background:#F0F9FF;padding:14px;border-radius:12px;border:1px solid #BAE6FD;">
+          <div style="margin-bottom:6px;"><b>话题：</b>${escapeHtml(t.subject || '')}</div>
+          <div style="margin-bottom:6px;"><b>目标用户：</b>${escapeHtml(t.audience || '')}</div>
+          <div style="margin-bottom:6px;"><b>竞争度：</b>${escapeHtml(t.competition || '')}</div>
+          <div>${escapeHtml(t.naturalTraffic || '')}</div>
+        </div>
+      </div>`;
+    }
+
+    // Angle
+    if (dnaData.angle) {
+      const a = dnaData.angle;
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:8px;">💡 切入角度</div>
+        <div style="background:#FEF3C7;padding:14px;border-radius:12px;border:1px solid #FDE68A;">
+          <div style="margin-bottom:6px;"><b>当前角度：</b>${escapeHtml(a.current || '')}</div>
+          <div style="margin-bottom:6px;">${escapeHtml(a.cleverPoint || '')}</div>
+          ${a.alternatives ? `<div style="font-size:13px;color:var(--sub);margin-top:6px;">其他切入角度：${a.alternatives.map(x => escapeHtml(x)).join('、')}</div>` : ''}
+        </div>
+      </div>`;
+    }
+
+    // Tags
+    if (dnaData.tags && dnaData.tags.length > 0) {
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:8px;">🏷️ 标签策略</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">`;
+      dnaData.tags.forEach(t => {
+        html += `<span style="background:#EEF2FF;padding:6px 12px;border-radius:16px;font-size:13px;border:1px solid #C7D2FE;">#${escapeHtml(t.tag)} <span style="color:var(--sub);font-size:12px;">${escapeHtml(t.purpose || '')}</span></span>`;
+      });
+      html += `</div></div>`;
+    }
+
+    // Advice
+    if (dnaData.advice) {
+      const ad = dnaData.advice;
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:8px;">🐱 爆款猫建议</div>
+        <div style="background:#F0FDF4;padding:14px;border-radius:12px;border:1px solid #BBF7D0;">
+          <div style="margin-bottom:6px;"><b>内容类型：</b>${escapeHtml(ad.contentType || '')}</div>
+          <div style="margin-bottom:6px;"><b>建议公式：</b>${escapeHtml(ad.suggestedFormula || '')}</div>
+          ${ad.tips ? ad.tips.map((t,i) => `<div style="font-size:13px;margin-top:4px;">${i+1}. ${escapeHtml(t)}</div>`).join('') : ''}
+        </div>
+      </div>`;
+    }
+
+    // Style Tags (basic)
+    if (dnaData.styleTags) {
+      const st = dnaData.styleTags;
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:8px;">🎨 风格标签（推测）</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span style="background:#E0E7FF;padding:4px 12px;border-radius:14px;font-size:13px;border:1px solid #C7D2FE;">📂 ${escapeHtml(st.contentType || 'N/A')}</span>
+          <span style="background:#D1FAE5;padding:4px 12px;border-radius:14px;font-size:13px;border:1px solid #A7F3D0;">💭 ${escapeHtml(st.emotionTone || 'N/A')}</span>
+          ${st.estimatedPresentation ? `<span style="background:#FCE7F3;padding:4px 12px;border-radius:14px;font-size:13px;border:1px solid #FBCFE8;">🎬 ${escapeHtml(st.estimatedPresentation)}</span>` : ''}
+        </div>
+        <div style="font-size:12px;color:var(--sub);margin-top:4px;">⚠️ 基于描述推测，非确定结论</div>
+      </div>`;
+    }
+
+    // Rewrite Directions (basic)
+    if (dnaData.rewriteDirections && dnaData.rewriteDirections.length > 0) {
+      html += `<div style="margin-bottom:18px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:10px;">✏️ 可借鉴的改写方向</div>`;
+      dnaData.rewriteDirections.forEach((r, i) => {
+        html += `<div style="background:#F8FAFC;padding:14px;border-radius:10px;border:1px solid #E2E8F0;margin-bottom:8px;">
+          <div style="font-weight:700;font-size:14px;margin-bottom:4px;">方向${i+1}：${escapeHtml(r.angle || '')} <span style="font-size:12px;color:var(--primary);background:#EEF2FF;padding:2px 8px;border-radius:8px;">${escapeHtml(r.suitablePlatform || '')}</span></div>
+          <div style="font-size:13px;color:var(--sub);">${escapeHtml(r.hookExample || '')}</div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
+    // Honesty note
+    if (dnaData.honesty) {
+      html += `<div style="background:#FFF7ED;padding:14px;border-radius:12px;border:1px solid #FED7AA;font-size:14px;color:#9A3412;margin-top:12px;">
+        ⚠️ ${escapeHtml(dnaData.honesty)}
+      </div>`;
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  // Show toggle row + sync toggle state
+  const toggleRow = document.getElementById('batchToggleRow');
+  toggleRow.style.display = 'flex';
+  syncToggleState();
+}
+
+// ===== API: Preview Strategy =====
+async function previewStrategy() {
+  const theme = document.getElementById('themeInput').value.trim();
+  const ideas = document.getElementById('ideaInput').value.trim();
+
+  if (!theme || theme.length < 4) {
+    showToast('⚠️ 请多写一点你的创作主题（至少4个字）');
+    document.getElementById('themeInput').focus();
+    return;
+  }
+
+  if (!dnaData) {
+    showError('请先分析一条爆款脚本');
+    return;
+  }
+
+  savedTheme = theme;
+  savedIdeas = ideas;
+  const btn = document.getElementById('btnPreview');
+  btn.disabled = true;
+  btn.textContent = '分析中...';
+
+  try {
+    const res = await fetch('/api/create-framework', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        theme: theme,
+        ideas: ideas,
+        dna: dnaData.dna,
+        skeleton: dnaData.skeleton,
+        topic: dnaData.topic,
+        angle: dnaData.angle,
+        advice: dnaData.advice
+      })
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) { showToast('⚠️ 服务错误，请稍后重试'); return; }
+      const err = await res.json();
+      throw new Error(err.error || '分析失败');
+    }
+
+    const data = await res.json();
+    strategyData = data.strategy;
+
+    // Render strategy card
+    document.getElementById('sContentType').textContent = strategyData.contentType || '-';
+    document.getElementById('sStructure').textContent = strategyData.matchedStructure || '-';
+    document.getElementById('sViewpoint').textContent = strategyData.coreViewpoint || '-';
+    document.getElementById('sDirection').textContent = strategyData.scriptDirection || '-';
+    document.getElementById('strategyCard').style.display = 'block';
+    document.getElementById('resultBox').style.display = 'none';
+    document.getElementById('genLoading').style.display = 'none';
+    document.getElementById('strategyCard').scrollIntoView({ behavior: 'smooth' });
+
+    showToast('✅ 策略确认，点击按钮生成脚本');
+  } catch (err) {
+    showToast('⚠️ ' + (err.message || '分析失败，重试一下'));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🐱 分析创作方向';
+  }
+}
+
+// ===== API: Generate My Script =====
+async function generateMyScript() {
+  if (!strategyData) {
+    showError('请先分析创作方向');
+    return;
+  }
+
+  const btn = document.getElementById('btnGenerate');
+  btn.disabled = true;
+  btn.textContent = '生成中...';
+  document.getElementById('genLoading').style.display = 'block';
+  document.getElementById('genLoading').scrollIntoView({ behavior: 'smooth' });
+
+  try {
+    const res = await fetch('/api/generate-script', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        theme: savedTheme,
+        ideas: savedIdeas,
+        dna: dnaData.dna,
+        skeleton: dnaData.skeleton,
+        topic: dnaData.topic,
+        angle: dnaData.angle,
+        advice: dnaData.advice
+      })
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) { showToast('⚠️ 服务错误，请稍后重试'); return; }
+      const err = await res.json();
+      throw new Error(err.error || '生成失败');
+    }
+
+    const data = await res.json();
+    document.getElementById('genLoading').style.display = 'none';
+    document.getElementById('resultText').textContent = data.script;
+    document.getElementById('resultBox').style.display = 'block';
+    document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
+    showToast('🎉 脚本已生成，检查一下再复制');
+  } catch (err) {
+    document.getElementById('genLoading').style.display = 'none';
+    showToast('⚠️ ' + (err.message || '生成失败，重试一下'));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🚀 生成我的爆款脚本';
+  }
+}
+
+// ===== Copy =====
+async function copyResult() {
+  const text = document.getElementById('resultText').textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('✅ 脚本已复制，去拍视频吧！');
+  } catch {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 脚本已复制，去拍视频吧！');
+  }
+}
+
+// ===== Example =====
+function loadExample() {
+  document.getElementById('metaTitle').value = '不管什么赛道，流量密码都藏在这3个细节里';
+  document.getElementById('metaDesc').value = '做了这么久内容还是没流量？不是你不努力，是你没看懂平台的底层逻辑。这条拆开讲透。';
+  document.getElementById('metaTags').value = '#内容创作 #流量密码 #个人IP #爆款拆解';
+  document.getElementById('scriptInput').value =
+`不管你做的是知识分享、美妆测评、还是Vlog日常，流量密码其实就藏在这三个容易被忽略的细节里。第一个，前3秒你给的不是标题，是承诺——你得让观众知道看完这条视频他能得到什么。第二个，每一段结尾留一个"为什么"，让观众不得不往下看。第三个，最后3秒别浪费，要给出一个具体的行动指令。我拆了100条百万播放视频，发现80%都用到了这三个细节。`;
+  showToast('📋 示例已填入，点"开始分析"试试（适用于任何赛道）');
+}
+
+// ===== Helpers =====
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ===== Batch Queue & Synthesis =====
+const BATCH_KEY = 'boomcat_batch_v1';
+let batchQueue = [];       // { ...dnaData, _selected: true }
+let synthesisResult = null;
+
+function loadBatchQueue() {
+  try {
+    const raw = localStorage.getItem(BATCH_KEY);
+    if (raw) batchQueue = JSON.parse(raw);
+  } catch { batchQueue = []; }
+  if (!Array.isArray(batchQueue)) batchQueue = [];
+}
+
+function saveBatchQueue() {
+  try {
+    localStorage.setItem(BATCH_KEY, JSON.stringify(batchQueue));
+  } catch {}
+  updateBatchUI();
+}
+
+function addToBatch(silent) {
+  if (!dnaData) return;
+
+  const scriptText = dnaData.original || '';
+  if (batchQueue.find(b => b.original === scriptText)) {
+    if (!silent) showToast('⚠️ 这条已经在队列中了');
+    return;
+  }
+
+  // Deep-clone dnaData so future analyses don't mutate queue items
+  const clone = JSON.parse(JSON.stringify(dnaData));
+  clone._selected = true;
+  batchQueue.push(clone);
+  saveBatchQueue();
+  syncToggleState();
+  if (!silent) showToast('✅ 已加入归纳队列（' + batchQueue.length + '条）');
+}
+
+function syncToggleState() {
+  const scriptText = dnaData?.original || '';
+  const inQueue = batchQueue.find(b => b.original === scriptText);
+  const checkbox = document.getElementById('toggleBatch');
+  if (checkbox) checkbox.checked = !!inQueue;
+}
+
+function toggleBatchItem() {
+  const checked = document.getElementById('toggleBatch')?.checked;
+  const scriptText = dnaData?.original || '';
+  if (!scriptText) return;
+
+  if (checked) {
+    if (!batchQueue.find(b => b.original === scriptText)) {
+      const clone = JSON.parse(JSON.stringify(dnaData));
+      clone._selected = true;
+      batchQueue.push(clone);
+    }
+  } else {
+    const idx = batchQueue.findIndex(b => b.original === scriptText);
+    if (idx >= 0) batchQueue.splice(idx, 1);
+  }
+  saveBatchQueue();
+}
+
+function removeFromBatch(index) {
+  batchQueue.splice(index, 1);
+  saveBatchQueue();
+  syncToggleState();
+}
+
+function selectAllBatch() {
+  batchQueue.forEach(b => b._selected = true);
+  saveBatchQueue();
+}
+
+function deselectAllBatch() {
+  batchQueue.forEach(b => b._selected = false);
+  saveBatchQueue();
+}
+
+function toggleItemSelection(index) {
+  batchQueue[index]._selected = !batchQueue[index]._selected;
+  saveBatchQueue();
+}
+
+function exportAnalysis() {
+  if (!dnaData) { showToast('⚠️ 没有可导出的分析结果'); return; }
+
+  const d = dnaData;
+  const isDeep = d.level === 'deep';
+  let md = `# ${isDeep ? '🔍 爆款深度拆解' : '📋 选题基础分析'}\n\n`;
+
+  // whyViral
+  if (d.whyViral) md += `## 🔥 为什么能火\n${d.whyViral}\n\n`;
+
+  // DNA (deep)
+  if (isDeep && d.dna) {
+    const dna = d.dna;
+    md += `## 🧬 爆款DNA\n`;
+    if (dna.hook?.type) md += `- 🪝 钩子：${dna.hook.type}\n`;
+    if (dna.formula?.name) md += `- ⚡ 公式：${dna.formula.name}（${(dna.formula.elements||[]).join('+')}）\n`;
+    if (dna.emotion?.primary) md += `- 💗 情绪：${dna.emotion.primary.join('、')}\n`;
+    if (dna.beatMap?.flow) md += `- 🏗️ 结构：${dna.beatMap.flow.join(' → ')}\n`;
+    md += '\n';
+  }
+
+  // Techniques (deep)
+  if (d.techniques?.length) {
+    md += `## 💡 核心技巧\n${d.techniques.map(t => `- ${t}`).join('\n')}\n\n`;
+  }
+
+  // Title/Desc/Tags (deep)
+  if (d.titleDescAnalysis) {
+    const tda = d.titleDescAnalysis;
+    md += `## 📺 标题+文案+标签分析\n`;
+    if (tda.title) md += `- 🔤 标题：${tda.title.technique || ''} | ${tda.title.strength || ''} | ${tda.title.suggestion || ''}\n`;
+    if (tda.description) md += `- 📝 文案：${tda.description.hook || ''} | ${tda.description.strength || ''} | ${tda.description.suggestion || ''}\n`;
+    if (tda.tags) md += `- 🏷️ 标签：${(tda.tags.existing||[]).map(t=>'#'+t).join(' ')} | ${tda.tags.suggestion || ''}\n`;
+    md += '\n';
+  }
+
+  // Topic (basic)
+  if (d.topic) {
+    md += `## 🎯 选题判断\n- 话题：${d.topic.subject || ''}\n- 目标用户：${d.topic.audience || ''}\n- 竞争度：${d.topic.competition || ''}\n- ${d.topic.naturalTraffic || ''}\n\n`;
+  }
+
+  // Skeleton
+  if (d.skeleton?.length) {
+    md += `## 📋 逐段拆解\n`;
+    d.skeleton.forEach((s, i) => {
+      md += `${i+1}. **${s.role}** — ${s.psychology || ''}\n`;
+      if (s.original && s.original !== '无') md += `   > ${s.original}\n`;
+    });
+    md += '\n';
+  }
+
+  // Rewrite directions
+  if (d.rewriteDirections?.length) {
+    md += `## ✏️ 改写方向\n`;
+    d.rewriteDirections.forEach((r, i) => {
+      md += `${i+1}. **${r.angle || ''}**（${r.suitablePlatform || ''}）\n   ${r.hookExample || ''}\n`;
+    });
+    md += '\n';
+  }
+
+  // Original script
+  if (d.original) {
+    md += `---\n## 📄 原始脚本\n\`\`\`\n${d.original}\n\`\`\`\n\n`;
+  }
+
+  md += `---\n*由 爆款猫 🐱 自动分析生成*`;
+
+  navigator.clipboard.writeText(md).then(() => {
+    showToast('📋 报告已复制到剪贴板！');
+  }).catch(() => {
+    // Fallback: show in textarea for manual copy
+    const ta = document.createElement('textarea');
+    ta.value = md;
+    ta.style.cssText = 'position:fixed;top:10%;left:50%;transform:translateX(-50%);width:90%;max-width:500px;height:200px;z-index:9999;padding:10px;border-radius:10px;border:2px solid var(--primary);font-size:14px;';
+    document.body.appendChild(ta);
+    ta.select();
+    showToast('📋 请手动复制（已选中文字）');
+    setTimeout(() => ta.remove(), 10000);
+  });
+}
+
+function clearBatch() {
+  if (batchQueue.length === 0) return;
+  batchQueue = [];
+  synthesisResult = null;
+  document.getElementById('synthesisResult').style.display = 'none';
+  document.getElementById('synthLoading').style.display = 'none';
+  saveBatchQueue();
+  syncToggleState();
+  showToast('🗑️ 队列已清空');
+}
+
+function updateBatchUI() {
+  const panel = document.getElementById('batchPanel');
+  const panelList = document.getElementById('batchPanelList');
+  const panelCount = document.getElementById('batchPanelCount');
+  const bar = document.getElementById('batchBar');
+  const hintText = document.getElementById('batchHintText');
+  const synthBtn = document.getElementById('btnSynthesize');
+
+  const selectedCount = batchQueue.filter(b => b._selected !== false).length;
+
+  if (batchQueue.length === 0) {
+    panel.style.display = 'none';
+    bar.classList.remove('has-items');
+    hintText.textContent = '分析2条以上同主题脚本后，可归纳共性规律';
+    synthBtn.disabled = true;
+    return;
+  }
+
+  // Show panel
+  panel.style.display = 'block';
+  panelCount.textContent = '已选 ' + selectedCount + '/' + batchQueue.length + ' 条';
+
+  // Bar state
+  bar.classList.add('has-items');
+  if (selectedCount < 2) {
+    hintText.textContent = '已选 ' + selectedCount + ' 条，至少选2条才能归纳';
+  } else {
+    hintText.textContent = '已选 ' + selectedCount + ' 条，可以归纳了！';
+  }
+  synthBtn.disabled = selectedCount < 2;
+
+  // Render item list with checkboxes
+  panelList.innerHTML = batchQueue.map((b, i) => {
+    const preview = (b.original || '').slice(0, 50).replace(/\n/g, ' ');
+    const typeLabel = b.level === 'deep' ? '深度' : '基础';
+    const typeClass = b.level === 'deep' ? 'deep' : 'basic';
+    const checked = b._selected !== false ? 'checked' : '';
+    return `<div class="batch-panel-item">
+      <input type="checkbox" ${checked} onchange="toggleItemSelection(${i})">
+      <span class="item-type ${typeClass}">${typeLabel}</span>
+      <span class="item-preview" title="${escapeHtml(preview)}">${escapeHtml(preview)}</span>
+      <span class="item-remove" onclick="removeFromBatch(${i})" title="移除">×</span>
+    </div>`;
+  }).join('');
+}
+
+async function synthesize() {
+  const selected = batchQueue.filter(b => b._selected !== false);
+  if (selected.length < 2) {
+    showToast('⚠️ 至少需要勾选2条分析结果才能归纳');
+    return;
+  }
+
+  const synthLoading = document.getElementById('synthLoading');
+  const synthResult = document.getElementById('synthesisResult');
+  const btnSynth = document.getElementById('btnSynthesize');
+
+  synthLoading.style.display = 'block';
+  synthResult.style.display = 'none';
+  btnSynth.disabled = true;
+  btnSynth.textContent = '⏳ 分析中...';
+
+  // Infer topic from the first selected analysis
+  let topic = '';
+  const first = selected[0];
+  if (first.dna?.styleTags?.contentType) {
+    topic = first.dna.styleTags.contentType;
+  } else if (first.topic?.subject) {
+    topic = first.topic.subject;
+  }
+
+  try {
+    const res = await fetch('/api/synthesize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ analyses: selected, topic })
+    });
+
+    if (!res.ok) {
+      let errMsg = '归纳失败';
+      try { const err = await res.json(); errMsg = err.error || errMsg; } catch {}
+      throw new Error(errMsg);
+    }
+
+    synthesisResult = await res.json();
+    renderSynthesis();
+  } catch (err) {
+    showToast('⚠️ ' + (err.message || '归纳失败，请重试'));
+    console.error('Synthesize error:', err);
+  } finally {
+    synthLoading.style.display = 'none';
+    btnSynth.disabled = false;
+    btnSynth.textContent = '🧬 归纳总结';
+  }
+}
+
+function renderSynthesis() {
+  if (!synthesisResult) return;
+
+  const div = document.getElementById('synthesisResult');
+  const s = synthesisResult;
+
+  let html = `<div class="synth-header">
+    <div class="icon">📊</div>
+    <div class="title">归纳总结</div>
+    <div class="summary">${escapeHtml(s.summary || '')}</div>
+  </div>`;
+
+  // Hook patterns
+  if (s.hookPatterns) {
+    html += `<div class="synth-section">
+      <div class="s-label">🪝 钩子共性</div>
+      <div class="s-value"><span class="s-tag">最常见：${escapeHtml(s.hookPatterns.mostCommon || '')}</span> ${escapeHtml(s.hookPatterns.distribution || '')}</div>
+      <div class="s-insight">💡 ${escapeHtml(s.hookPatterns.insight || '')}</div>
+    </div>`;
+  }
+
+  // Structure patterns
+  if (s.structurePatterns) {
+    const flows = (s.structurePatterns.commonFlows || []).map(f => `<span class="s-tag">${escapeHtml(f)}</span>`).join(' ');
+    html += `<div class="synth-section">
+      <div class="s-label">🏗️ 结构共性</div>
+      <div class="s-value">${flows}</div>
+      <div class="s-insight">💡 ${escapeHtml(s.structurePatterns.insight || '')}</div>
+    </div>`;
+  }
+
+  // Emotion patterns
+  if (s.emotionPatterns) {
+    const curves = (s.emotionPatterns.commonCurves || []).map(c => `<span class="s-tag">${escapeHtml(c)}</span>`).join(' ');
+    html += `<div class="synth-section">
+      <div class="s-label">💗 情绪共性</div>
+      <div class="s-value">${curves}</div>
+      <div class="s-insight">💡 ${escapeHtml(s.emotionPatterns.insight || '')}</div>
+    </div>`;
+  }
+
+  // Technique patterns
+  if (s.techniquePatterns) {
+    const techs = (s.techniquePatterns.recurring || []).map(t => `<span class="s-tag">${escapeHtml(t)}</span>`).join(' ');
+    html += `<div class="synth-section">
+      <div class="s-label">🔧 技巧共性</div>
+      <div class="s-value">${techs}</div>
+      <div class="s-insight">💡 ${escapeHtml(s.techniquePatterns.insight || '')}</div>
+    </div>`;
+  }
+
+  // Style patterns
+  if (s.stylePatterns) {
+    html += `<div class="synth-section">
+      <div class="s-label">🎨 风格共性</div>
+      <div class="s-value">内容类型：${escapeHtml(s.stylePatterns.contentTypes || '')} | 呈现方式：${escapeHtml(s.stylePatterns.presentations || '')}</div>
+      <div class="s-insight">💡 ${escapeHtml(s.stylePatterns.insight || '')}</div>
+    </div>`;
+  }
+
+  // Rewrite insights
+  if (s.rewriteInsights) {
+    html += `<div class="synth-section">
+      <div class="s-label">✏️ 可操作的改写建议</div>
+      <div class="s-value">${escapeHtml(s.rewriteInsights).replace(/\d+\.\s*/g, '<br>$&')}</div>
+    </div>`;
+  }
+
+  // Actions
+  html += `<div class="synth-actions">
+    <button class="btn btn-primary btn-sm" onclick="copySynthesis()">📋 复制报告</button>
+    <button class="btn btn-outline btn-sm" onclick="clearBatch()">🔄 清空重来</button>
+  </div>`;
+
+  div.innerHTML = html;
+  div.style.display = 'block';
+  div.scrollIntoView({ behavior: 'smooth' });
+}
+
+function copySynthesis() {
+  if (!synthesisResult) return;
+
+  const s = synthesisResult;
+  let md = `# 📊 爆款归纳总结\n\n**${s.summary || ''}**\n\n`;
+
+  if (s.hookPatterns) {
+    md += `## 🪝 钩子共性\n- 最常见：${s.hookPatterns.mostCommon || ''}\n- ${s.hookPatterns.distribution || ''}\n- 💡 ${s.hookPatterns.insight || ''}\n\n`;
+  }
+  if (s.structurePatterns) {
+    md += `## 🏗️ 结构共性\n- ${(s.structurePatterns.commonFlows || []).join('、')}\n- 💡 ${s.structurePatterns.insight || ''}\n\n`;
+  }
+  if (s.emotionPatterns) {
+    md += `## 💗 情绪共性\n- ${(s.emotionPatterns.commonCurves || []).join('、')}\n- 💡 ${s.emotionPatterns.insight || ''}\n\n`;
+  }
+  if (s.techniquePatterns) {
+    md += `## 🔧 技巧共性\n- ${(s.techniquePatterns.recurring || []).join('、')}\n- 💡 ${s.techniquePatterns.insight || ''}\n\n`;
+  }
+  if (s.stylePatterns) {
+    md += `## 🎨 风格共性\n- 内容类型：${s.stylePatterns.contentTypes || ''}\n- 呈现方式：${s.stylePatterns.presentations || ''}\n- 💡 ${s.stylePatterns.insight || ''}\n\n`;
+  }
+  if (s.rewriteInsights) {
+    md += `## ✏️ 改写建议\n${s.rewriteInsights}\n\n`;
+  }
+
+  md += `---\n*由 爆款猫 🐱 自动归纳生成*`;
+
+  navigator.clipboard.writeText(md).then(() => {
+    showToast('📋 报告已复制！可以粘贴到小红书/朋友圈');
+  }).catch(() => {
+    showToast('⚠️ 复制失败，请手动选择文字');
+    // Fallback: show in a textarea
+    const ta = document.createElement('textarea');
+    ta.value = md;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('📋 报告已复制！');
+  });
+}
+
+// ===== Auth =====
+let authMode = 'login'; // 'login' | 'register'
+
+function getToken() { return localStorage.getItem('boomcat_token') || ''; }
+function currentUser() { return localStorage.getItem('boomcat_user') || ''; }
+function isLoggedIn() { return !!getToken(); }
+function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() }; }
+
+function openAuthPanel() {
+  const form = document.getElementById('authForm');
+  const logged = document.getElementById('authLoggedIn');
+  document.getElementById('authPassword').value = '';
+  if (isLoggedIn()) {
+    form.style.display = 'none';
+    logged.style.display = 'block';
+    document.getElementById('authTitle').textContent = '👤 我的账号';
+    document.getElementById('authUserName').textContent = '当前登录：' + currentUser();
+  } else {
+    form.style.display = 'block';
+    logged.style.display = 'none';
+    renderAuthForm();
+  }
+  document.getElementById('authOverlay').classList.add('show');
+}
+
+function renderAuthForm() {
+  const isLogin = authMode === 'login';
+  document.getElementById('authTitle').textContent = '👤 ' + (isLogin ? '登录' : '注册');
+  document.getElementById('authSubmit').textContent = isLogin ? '登录' : '注册';
+  document.querySelector('#authForm .auth-switch a').textContent = isLogin ? '立即注册' : '已有账号，去登录';
+}
+
+function toggleAuthMode() {
+  authMode = authMode === 'login' ? 'register' : 'login';
+  document.getElementById('authPassword').value = '';
+  renderAuthForm();
+}
+
+function closeAuthPanel(event) {
+  if (event && event.target !== document.getElementById('authOverlay')) return;
+  document.getElementById('authOverlay').classList.remove('show');
+}
+
+function updateUserBadge() {
+  const badge = document.getElementById('userBadge');
+  if (isLoggedIn()) badge.classList.add('show');
+  else badge.classList.remove('show');
+}
+
+async function submitAuth() {
+  const username = document.getElementById('authUsername').value.trim();
+  const password = document.getElementById('authPassword').value;
+  if (!username || !password) { showToast('⚠️ 请填写用户名和密码'); return; }
+  const url = authMode === 'login' ? '/api/login' : '/api/register';
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || '操作失败');
+    localStorage.setItem('boomcat_token', data.token);
+    localStorage.setItem('boomcat_user', data.username);
+    updateUserBadge();
+    closeAuthPanel();
+    showToast(authMode === 'login' ? '👋 欢迎回来，' + data.username : '🎉 注册成功，欢迎 ' + data.username);
+    await refreshHistory();
+  } catch (err) {
+    showToast('⚠️ ' + (err.message || '操作失败'));
+  }
+}
+
+function doLogout() {
+  const token = getToken();
+  if (token) fetch('/api/logout', { method: 'POST', headers: authHeaders() }).catch(() => {});
+  localStorage.removeItem('boomcat_token');
+  localStorage.removeItem('boomcat_user');
+  updateUserBadge();
+  closeAuthPanel();
+  showToast('👋 已退出登录');
+  refreshHistory();
+}
+
+// ===== History =====
+const HISTORY_KEY = 'boomcat_history_v4';
+const MAX_HISTORY = 20;
+let historyCache = [];
+
+function loadLocalHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
+  catch { return []; }
+}
+function saveLocalHistory(list) { localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); }
+
+async function refreshHistory() {
+  if (isLoggedIn()) {
+    try {
+      const res = await fetch('/api/history', { headers: authHeaders() });
+      if (res.ok) {
+        const list = await res.json();
+        historyCache = list.map(r => ({ id: r.id, date: r.date, preview: r.preview, data: r.data }));
+      } else if (res.status === 401) {
+        // token 失效，退回本地
+        localStorage.removeItem('boomcat_token');
+        localStorage.removeItem('boomcat_user');
+        updateUserBadge();
+        historyCache = loadLocalHistory();
+      } else {
+        historyCache = loadLocalHistory();
+      }
+    } catch { historyCache = loadLocalHistory(); }
+  } else {
+    historyCache = loadLocalHistory();
+  }
+  updateHistoryBadge();
+}
+
+function saveHistory(script, data) {
+  const preview = script.slice(0, 50).replace(/\n/g, ' ');
+  const date = new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  // Save all analysis fields so restored history renders correctly
+  const saved = { original: script, level: data.level, whyViral: data.whyViral };
+  if (data._meta) saved._meta = data._meta;
+  if (data.dna) saved.dna = data.dna;
+  if (data.skeleton) saved.skeleton = data.skeleton;
+  if (data.techniques) saved.techniques = data.techniques;
+  if (data.rewriteDirections) saved.rewriteDirections = data.rewriteDirections;
+  if (data.titleDescAnalysis) saved.titleDescAnalysis = data.titleDescAnalysis;
+  if (data.topic) saved.topic = data.topic;
+  if (data.angle) saved.angle = data.angle;
+  if (data.advice) saved.advice = data.advice;
+
+  if (isLoggedIn()) {
+    fetch('/api/history', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ preview, date, data: saved })
+    }).then(res => {
+      if (res.status === 401) {
+        localStorage.removeItem('boomcat_token');
+        localStorage.removeItem('boomcat_user');
+        updateUserBadge();
+      }
+      return refreshHistory();
+    }).catch(() => refreshHistory());
+  } else {
+    let history = loadLocalHistory();
+    history = history.filter(h => h.preview !== preview);
+    history.unshift({ id: Date.now(), date, preview, data: saved });
+    if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+    saveLocalHistory(history);
+    historyCache = history;
+    updateHistoryBadge();
+  }
+}
+
+function loadHistory() { return historyCache; }
+
+function updateHistoryBadge() {
+  const badge = document.getElementById('historyBadge');
+  if (historyCache.length > 0) {
+    badge.textContent = historyCache.length;
+    badge.classList.add('show');
+  } else {
+    badge.classList.remove('show');
+  }
+}
+
+async function openHistoryPanel() {
+  await refreshHistory();
+  renderHistoryPanel();
+}
+
+function renderHistoryPanel() {
+  const overlay = document.getElementById('historyOverlay');
+  const list = document.getElementById('historyList');
+  const empty = document.getElementById('historyEmpty');
+  const history = historyCache;
+
+  if (history.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    list.innerHTML = history.map((h, i) => `
+      <div class="history-item" onclick="openHistory(${i})">
+        <div class="history-preview">${escapeHtml(h.preview)}...</div>
+        <div class="history-meta">
+          <span>${h.date}</span>
+          <button class="history-delete" onclick="event.stopPropagation();deleteHistory(${i})">×</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  overlay.classList.add('show');
+}
+
+function closeHistoryPanel(event) {
+  if (event && event.target !== document.getElementById('historyOverlay')) return;
+  document.getElementById('historyOverlay').classList.remove('show');
+}
+
+function openHistory(index) {
+  const item = historyCache[index];
+  if (!item || !item.data) return;
+  dnaData = item.data;
+  document.getElementById('scriptInput').value = item.data.original || '';
+
+  const meta = item.data._meta;
+  if (meta) {
+    document.getElementById('metaTitle').value = meta.title || '';
+    document.getElementById('metaDesc').value = meta.desc || '';
+    document.getElementById('metaTags').value = meta.tags || '';
+  }
+
+  closeHistoryPanel();
+  showScreen('skeleton');
+  renderSkeleton();
+  syncToggleState();
+}
+
+async function deleteHistory(index) {
+  const item = historyCache[index];
+  if (!item) return;
+  if (isLoggedIn()) {
+    try { await fetch('/api/history/' + item.id, { method: 'DELETE', headers: authHeaders() }); } catch {}
+    await refreshHistory();
+  } else {
+    let history = loadLocalHistory();
+    history.splice(index, 1);
+    saveLocalHistory(history);
+    historyCache = history;
+    updateHistoryBadge();
+  }
+  renderHistoryPanel();
+}
+
+// ===== Init =====
+loadBatchQueue();
+updateBatchUI();
+updateSteps();
+historyCache = loadLocalHistory();
+updateHistoryBadge();
+updateUserBadge();
+refreshHistory();
+</script></body>
+</html>

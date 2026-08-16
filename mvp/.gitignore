@@ -1,0 +1,13 @@
+node_modules/
+.env
+.DS_Store
+*.log
+*.db
+*.db-wal
+*.db-shm
+
+# 本地敏感/大文件，不提交到仓库
+douyin_cookies.txt
+douyin_downloader.js
+page_dump.html
+yt-dlp*
