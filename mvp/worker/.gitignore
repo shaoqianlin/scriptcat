@@ -1,0 +1,8 @@
+# Cloudflare deployment
+node_modules/
+.wrangler/
+.dev.vars
+.env
+*.db
+*.db-wal
+*.db-shm

@@ -1,0 +1,15 @@
+{
+  "name": "boomcat-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test worker/test/*.test.js",
+    "test:app": "npm test"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3"
+  },
+  "devDependencies": {
+    "wrangler": "^4.33.0"
+  }
+}

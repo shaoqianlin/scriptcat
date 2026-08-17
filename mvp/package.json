@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "脚本猫 - 爆款脚本拆解",
   "main": "server.js",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "start": "node server.js",
     "test": "node --test"

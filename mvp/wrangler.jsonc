@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "boomcat",
+  "pages_build_output_dir": "frontend",
+  "compatibility_date": "2026-08-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "API_URL": "https://api.deepseek.com/v1/chat/completions",
+    "MODEL": "deepseek-chat",
+    "ALLOWED_ORIGINS": "https://boomcat.pages.dev,https://*.boomcat.pages.dev"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "boomcat-db",
+      "database_id": "5be83424-a329-40a9-8cb2-aaf961461184",
+      "migrations_dir": "worker/migrations"
+    }
+  ]
+}

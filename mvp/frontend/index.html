@@ -607,8 +607,8 @@
 let dnaData = null;         // Full DNA analysis result from /api/analyze
 let currentScreen = 'landing';
 
-// Production defaults to same-origin Worker routing. Pages previews can set
-// window.BOOMCAT_API_ORIGIN to an API Worker custom domain.
+// Production serves /api/* from Pages Functions on the same origin. Set
+// window.BOOMCAT_API_ORIGIN to override (e.g. a separate API host in previews).
 const API_ORIGIN = String(window.BOOMCAT_API_ORIGIN || '').replace(/\/$/, '');
 function apiFetch(path, options) {
   const normalizedPath = path.startsWith('/') ? path : '/' + path;
