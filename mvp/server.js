@@ -5,6 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const { DatabaseSync } = require('node:sqlite');
+const { initializeDatabase } = require('./database');
 
 const app = express();
 
@@ -15,24 +16,7 @@ app.use(express.static(path.join(__dirname)));
 
 // ========== 数据库（用户 + 历史） ==========
 const db = new DatabaseSync(path.join(__dirname, 'data.db'));
-
-// users 表沿用旧版结构（nickname 作为登录账号），这里只补充会话表和历史表
-db.exec(`
-  CREATE TABLE IF NOT EXISTS sessions (
-    token TEXT PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    created_at INTEGER NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS history (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    preview TEXT NOT NULL,
-    date TEXT NOT NULL,
-    data TEXT NOT NULL,
-    created_at INTEGER NOT NULL
-  );
-  CREATE INDEX IF NOT EXISTS idx_history_user ON history(user_id, created_at);
-`);
+initializeDatabase(db);
 
 const MAX_HISTORY = 20;
 
