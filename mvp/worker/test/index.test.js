@@ -70,3 +70,55 @@ test('omits CORS headers for a non-matching origin', async () => {
 
   assert.equal(response.headers.get('Access-Control-Allow-Origin'), null);
 });
+
+test('uses a personal DeepSeek key for analysis', async () => {
+  let receivedKey = '';
+  const worker = createWorker({
+    repositoryFactory: () => repository(),
+    analyze: async ({ config }) => { receivedKey = config.apiKey; return { status: 200, body: {} }; },
+  });
+  await worker.fetch(new Request('https://app.example.com/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-DeepSeek-API-Key': 'personal-key' },
+    body: JSON.stringify({ script: 'a'.repeat(10) }),
+  }), environment);
+  assert.equal(receivedKey, 'personal-key');
+});
+
+test('falls back to the configured DeepSeek key', async () => {
+  let receivedKey = '';
+  const worker = createWorker({
+    repositoryFactory: () => repository(),
+    analyze: async ({ config }) => { receivedKey = config.apiKey; return { status: 200, body: {} }; },
+  });
+  await worker.fetch(new Request('https://app.example.com/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ script: 'a'.repeat(10) }),
+  }), environment);
+  assert.equal(receivedKey, 'test-key');
+});
+
+test('rejects an oversized personal DeepSeek key', async () => {
+  const worker = createWorker({ repositoryFactory: () => repository() });
+  const response = await worker.fetch(new Request('https://app.example.com/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-DeepSeek-API-Key': 'x'.repeat(513) },
+    body: JSON.stringify({ script: 'a'.repeat(10) }),
+  }), environment);
+  assert.equal(response.status, 400);
+});
+
+test('allows the personal key header in CORS preflight', async () => {
+  const worker = createWorker({ repositoryFactory: () => repository() });
+  const response = await worker.fetch(new Request('https://app.example.com/api/analyze', {
+    method: 'OPTIONS',
+    headers: {
+      Origin: 'https://app.example.com',
+      'Access-Control-Request-Method': 'POST',
+      'Access-Control-Request-Headers': 'content-type,x-deepseek-api-key',
+    },
+  }), environment);
+  assert.equal(response.status, 204);
+  assert.match(response.headers.get('Access-Control-Allow-Headers'), /X-DeepSeek-API-Key/);
+});

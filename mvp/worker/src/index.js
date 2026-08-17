@@ -28,7 +28,7 @@ function corsHeaders(request, environment) {
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+    'Access-Control-Allow-Headers': 'Authorization, Content-Type, X-DeepSeek-API-Key',
     'Vary': 'Origin',
   };
 }
@@ -52,9 +52,11 @@ async function requireUser(request, repository) {
   return { userId: session.user_id, token };
 }
 
-function configFrom(environment, fetchImpl = fetch) {
+function configFrom(environment, request, fetchImpl = fetch) {
+  const personalKey = (request.headers.get('X-DeepSeek-API-Key') || '').trim();
+  if (personalKey.length > 512) throw Object.assign(new Error('API key is too long'), { status: 400 });
   return {
-    apiKey: environment.DEEPSEEK_API_KEY,
+    apiKey: personalKey || environment.DEEPSEEK_API_KEY,
     apiUrl: environment.API_URL,
     model: environment.MODEL,
     fetchImpl,
@@ -76,11 +78,11 @@ export function createWorker({ repositoryFactory, analyze = null, synthesize = n
 
       try {
         if (url.pathname === '/api/analyze' && request.method === 'POST') {
-          const result = await runAnalyze({ ...(await requestBody(request)), config: configFrom(environment, context.fetchImpl || fetch) });
+          const result = await runAnalyze({ ...(await requestBody(request)), config: configFrom(environment, request, context.fetchImpl || fetch) });
           return json(result.body, result.status, headers);
         }
         if (url.pathname === '/api/synthesize' && request.method === 'POST') {
-          const result = await runSynthesize({ ...(await requestBody(request)), config: configFrom(environment, context.fetchImpl || fetch) });
+          const result = await runSynthesize({ ...(await requestBody(request)), config: configFrom(environment, request, context.fetchImpl || fetch) });
           return json(result.body, result.status, headers);
         }
 
