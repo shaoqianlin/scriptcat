@@ -12,6 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '500kb' }));
 app.use((req, res, next) => { req.setTimeout(180000); next(); });
+app.use(express.static(path.join(__dirname, 'frontend')));
 app.use(express.static(path.join(__dirname)));
 
 // ========== 数据库（用户 + 历史） ==========
@@ -20,6 +21,16 @@ const db = new DatabaseSync(databasePath);
 initializeDatabase(db);
 
 const MAX_HISTORY = 20;
+
+function requestApiKey(req) {
+  const personalKey = String(req.headers['x-deepseek-api-key'] || '').trim();
+  if (personalKey.length > 512) {
+    const error = new Error('API key is too long');
+    error.status = 400;
+    throw error;
+  }
+  return personalKey || process.env.DEEPSEEK_API_KEY;
+}
 
 function hashPassword(pw) { return bcrypt.hashSync(pw, 10); }
 function verifyPassword(pw, hash) { return bcrypt.compareSync(pw, hash); }
@@ -287,7 +298,8 @@ app.post('/api/analyze', async (req, res) => {
   const level = isDeep ? 'deep' : 'basic';
   console.log(`分析请求: ${charCount}字 → ${level}`);
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  let apiKey;
+  try { apiKey = requestApiKey(req); } catch (error) { return res.status(error.status || 400).json({ error: 'API Key 无效' }); }
   const apiUrl = process.env.API_URL || 'https://api.deepseek.com/v1/chat/completions';
   const model = process.env.MODEL || 'deepseek-chat';
 
@@ -416,7 +428,8 @@ app.post('/api/synthesize', async (req, res) => {
     return res.status(400).json({ error: '至少需要2条分析结果才能归纳总结' });
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  let apiKey;
+  try { apiKey = requestApiKey(req); } catch (error) { return res.status(error.status || 400).json({ error: 'API Key 无效' }); }
   const apiUrl = process.env.API_URL || 'https://api.deepseek.com/v1/chat/completions';
   const model = process.env.MODEL || 'deepseek-chat';
 
