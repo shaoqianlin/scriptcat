@@ -1,0 +1,12 @@
+{
+  "name": "boomcat",
+  "version": "1.0.0",
+  "description": "爆款猫 - AI爆款脚本创作工具",
+  "scripts": {
+    "start": "npm ci --prefix mvp && npm start --prefix mvp",
+    "build": "cd mvp && npm ci"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
