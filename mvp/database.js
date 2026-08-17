@@ -1,3 +1,9 @@
+const path = require('node:path');
+
+function resolveDatabasePath(baseDir, configuredPath) {
+  return configuredPath?.trim() || path.join(baseDir, 'data.db');
+}
+
 function initializeDatabase(db) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -23,4 +29,4 @@ function initializeDatabase(db) {
   `);
 }
 
-module.exports = { initializeDatabase };
+module.exports = { initializeDatabase, resolveDatabasePath };

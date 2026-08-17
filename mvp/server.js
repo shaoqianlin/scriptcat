@@ -5,7 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const { DatabaseSync } = require('node:sqlite');
-const { initializeDatabase } = require('./database');
+const { initializeDatabase, resolveDatabasePath } = require('./database');
 
 const app = express();
 
@@ -15,7 +15,8 @@ app.use((req, res, next) => { req.setTimeout(180000); next(); });
 app.use(express.static(path.join(__dirname)));
 
 // ========== 数据库（用户 + 历史） ==========
-const db = new DatabaseSync(path.join(__dirname, 'data.db'));
+const databasePath = resolveDatabasePath(__dirname, process.env.DATABASE_PATH);
+const db = new DatabaseSync(databasePath);
 initializeDatabase(db);
 
 const MAX_HISTORY = 20;

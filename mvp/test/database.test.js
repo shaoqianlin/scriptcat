@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { DatabaseSync } = require('node:sqlite');
-const { initializeDatabase } = require('../database');
+const { initializeDatabase, resolveDatabasePath } = require('../database');
 
 test('initializes every table required by registration and history', () => {
   const db = new DatabaseSync(':memory:');
@@ -18,4 +18,15 @@ test('initializes every table required by registration and history', () => {
   db.prepare(
     'INSERT INTO users (nickname, password_hash, created_at) VALUES (?, ?, ?)',
   ).run('tester', 'hash', '2026-08-17T00:00:00.000Z');
+});
+
+test('uses the configured production database path when provided', () => {
+  assert.equal(
+    resolveDatabasePath('C:\\app', 'D:\\data\\app.db'),
+    'D:\\data\\app.db',
+  );
+});
+
+test('defaults to data.db in the application directory', () => {
+  assert.equal(resolveDatabasePath('C:\\app', ''), 'C:\\app\\data.db');
 });
