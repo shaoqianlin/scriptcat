@@ -322,6 +322,20 @@
   .auth-switch a { color: var(--primary); font-weight: 600; cursor: pointer; }
   .auth-user { text-align: center; font-size: 16px; color: var(--text); padding: 4px 0; }
 
+  /* DeepSeek API settings */
+  .api-settings-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 1002; display: none; align-items: center; justify-content: center; overscroll-behavior: contain; }
+  .api-settings-overlay.show { display: flex; }
+  .api-settings-panel { background: #fff; border-radius: 20px; width: 100%; max-width: 380px; margin: 0 24px; padding: 24px 20px; animation: slideUp 0.3s ease; box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+  .api-settings-panel h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; text-align: center; }
+  .api-settings-help { color: var(--sub); font-size: 13px; line-height: 1.5; margin: 0 0 14px; }
+  .api-key-row { display: flex; gap: 8px; align-items: stretch; }
+  .api-key-input { flex: 1; min-width: 0; border: 2px solid var(--border); border-radius: 14px; padding: 12px 14px; font-size: 15px; background: #F8FAFC; color: var(--text); }
+  .api-key-input:focus { border-color: var(--primary-light); outline: none; background: #fff; }
+  .api-key-toggle { width: 46px; border: 2px solid var(--border); border-radius: 14px; background: #fff; cursor: pointer; font-size: 18px; }
+  .api-key-actions { display: flex; gap: 10px; margin-top: 14px; }
+  .api-key-actions .btn { flex: 1; }
+  .api-key-status { min-height: 20px; color: var(--sub); font-size: 13px; margin-top: 10px; text-align: center; }
+
   /* ===== Mobile Responsive ===== */
   @media (max-width: 400px) {
     .app { padding: calc(16px + env(safe-area-inset-top, 0px)) 12px var(--safe-bottom); }
@@ -432,6 +446,7 @@
       <div class="tagline" id="tagline">流量密码，喵一眼就懂</div>
     </div>
     <div class="header-right">
+      <button class="btn-history" id="btnApiSettings" onclick="openApiSettings()" title="DeepSeek API settings" aria-label="DeepSeek API settings">🔑</button>
       <button class="btn-history" id="btnUser" onclick="openAuthPanel()" title="登录/注册">
         👤
         <span class="badge user-badge" id="userBadge"></span>
@@ -601,11 +616,28 @@
     </div>
   </div>
 
+  <div class="api-settings-overlay" id="apiSettingsOverlay" onclick="closeApiSettings(event)">
+    <div class="api-settings-panel" onclick="event.stopPropagation()">
+      <h3>🔑 DeepSeek API</h3>
+      <p class="api-settings-help">填写你自己的 DeepSeek API Key。密钥只保存在当前浏览器，不会保存到账号或服务器。</p>
+      <div class="api-key-row">
+        <input class="api-key-input" id="deepSeekApiKey" type="password" autocomplete="off" placeholder="sk-..." maxlength="512">
+        <button class="api-key-toggle" id="deepSeekApiKeyToggle" onclick="toggleApiKeyVisibility()" title="显示或隐藏 Key" aria-label="显示或隐藏 Key">👁</button>
+      </div>
+      <div class="api-key-status" id="apiKeyStatus"></div>
+      <div class="api-key-actions">
+        <button class="btn btn-outline" onclick="clearApiKey()">清除</button>
+        <button class="btn btn-primary" onclick="saveApiKey()">保存</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 <script>
 // ===== State =====
 let dnaData = null;         // Full DNA analysis result from /api/analyze
 let currentScreen = 'landing';
+const DEEPSEEK_KEY_STORAGE = 'boomcat_deepseek_api_key';
 
 // Production serves /api/* from Pages Functions on the same origin. Set
 // window.BOOMCAT_API_ORIGIN to override (e.g. a separate API host in previews).
@@ -613,6 +645,50 @@ const API_ORIGIN = String(window.BOOMCAT_API_ORIGIN || '').replace(/\/$/, '');
 function apiFetch(path, options) {
   const normalizedPath = path.startsWith('/') ? path : '/' + path;
   return fetch(API_ORIGIN + normalizedPath, options);
+}
+
+function deepSeekHeaders() {
+  if (window.boomcatDeepSeekHeaders) return window.boomcatDeepSeekHeaders();
+  const key = (localStorage.getItem(DEEPSEEK_KEY_STORAGE) || '').trim();
+  return key ? { 'X-DeepSeek-API-Key': key } : {};
+}
+
+function openApiSettings() {
+  const saved = localStorage.getItem(DEEPSEEK_KEY_STORAGE) || '';
+  document.getElementById('deepSeekApiKey').value = saved;
+  document.getElementById('deepSeekApiKey').type = 'password';
+  document.getElementById('apiKeyStatus').textContent = saved ? '当前浏览器已保存一个 Key' : '未设置个人 Key，将使用系统配置';
+  document.getElementById('apiSettingsOverlay').classList.add('show');
+}
+
+function closeApiSettings(event) {
+  if (event && event.target !== document.getElementById('apiSettingsOverlay')) return;
+  document.getElementById('apiSettingsOverlay').classList.remove('show');
+}
+
+function toggleApiKeyVisibility() {
+  const input = document.getElementById('deepSeekApiKey');
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function saveApiKey() {
+  const input = document.getElementById('deepSeekApiKey');
+  const key = input.value.trim();
+  if (!key) return clearApiKey();
+  if (key.length > 512) {
+    document.getElementById('apiKeyStatus').textContent = 'Key 不能超过 512 个字符';
+    return;
+  }
+  localStorage.setItem(DEEPSEEK_KEY_STORAGE, key);
+  document.getElementById('apiKeyStatus').textContent = '已保存在当前浏览器';
+  showToast('DeepSeek Key 已保存');
+}
+
+function clearApiKey() {
+  localStorage.removeItem(DEEPSEEK_KEY_STORAGE);
+  document.getElementById('deepSeekApiKey').value = '';
+  document.getElementById('apiKeyStatus').textContent = '未设置个人 Key，将使用系统配置';
+  showToast('已清除个人 DeepSeek Key');
 }
 
 // ===== Navigation =====
@@ -678,7 +754,7 @@ async function analyze() {
   try {
     const res = await apiFetch('/api/analyze', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...deepSeekHeaders() },
       body: JSON.stringify({ script, title, desc, tags })
     });
 
@@ -1231,7 +1307,7 @@ async function synthesize() {
   try {
     const res = await apiFetch('/api/synthesize', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...deepSeekHeaders() },
       body: JSON.stringify({ analyses: selected, topic })
     });
 
@@ -1623,5 +1699,9 @@ historyCache = loadLocalHistory();
 updateHistoryBadge();
 updateUserBadge();
 refreshHistory();
+</script>
+<script type="module">
+  import { createDeepSeekHeaders } from './deepseek-key.js';
+  window.boomcatDeepSeekHeaders = createDeepSeekHeaders;
 </script></body>
 </html>
