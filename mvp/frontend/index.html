@@ -657,7 +657,7 @@ function openApiSettings() {
   const saved = localStorage.getItem(DEEPSEEK_KEY_STORAGE) || '';
   document.getElementById('deepSeekApiKey').value = saved;
   document.getElementById('deepSeekApiKey').type = 'password';
-  document.getElementById('apiKeyStatus').textContent = saved ? '当前浏览器已保存一个 Key' : '未设置个人 Key，将使用系统配置';
+  document.getElementById('apiKeyStatus').textContent = saved ? '当前浏览器已保存一个 Key' : '未设置个人 Key，无法分析，请先配置';
   document.getElementById('apiSettingsOverlay').classList.add('show');
 }
 
@@ -687,7 +687,7 @@ function saveApiKey() {
 function clearApiKey() {
   localStorage.removeItem(DEEPSEEK_KEY_STORAGE);
   document.getElementById('deepSeekApiKey').value = '';
-  document.getElementById('apiKeyStatus').textContent = '未设置个人 Key，将使用系统配置';
+  document.getElementById('apiKeyStatus').textContent = '未设置个人 Key，无法分析，请先配置';
   showToast('已清除个人 DeepSeek Key');
 }
 

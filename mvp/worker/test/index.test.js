@@ -85,8 +85,8 @@ test('uses a personal DeepSeek key for analysis', async () => {
   assert.equal(receivedKey, 'personal-key');
 });
 
-test('falls back to the configured DeepSeek key', async () => {
-  let receivedKey = '';
+test('leaves the API key empty when no personal key is set', async () => {
+  let receivedKey = 'unset';
   const worker = createWorker({
     repositoryFactory: () => repository(),
     analyze: async ({ config }) => { receivedKey = config.apiKey; return { status: 200, body: {} }; },
@@ -96,7 +96,7 @@ test('falls back to the configured DeepSeek key', async () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ script: 'a'.repeat(10) }),
   }), environment);
-  assert.equal(receivedKey, 'test-key');
+  assert.equal(receivedKey, '');
 });
 
 test('rejects an oversized personal DeepSeek key', async () => {

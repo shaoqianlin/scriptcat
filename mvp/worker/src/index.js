@@ -56,7 +56,7 @@ function configFrom(environment, request, fetchImpl = fetch) {
   const personalKey = (request.headers.get('X-DeepSeek-API-Key') || '').trim();
   if (personalKey.length > 512) throw Object.assign(new Error('API key is too long'), { status: 400 });
   return {
-    apiKey: personalKey || environment.DEEPSEEK_API_KEY,
+    apiKey: personalKey,
     apiUrl: environment.API_URL,
     model: environment.MODEL,
     fetchImpl,

@@ -68,7 +68,7 @@ function buildSynthesisPrompt(analyses, topic) {
 }
 
 async function callDeepSeek({ apiKey, apiUrl, model, systemPrompt, userContent, maxTokens, fetchImpl = fetch, timeoutMs = 120000 }) {
-  if (!apiKey) return { status: 500, body: { error: '服务还没配置好，请联系开发者设置API Key' } };
+  if (!apiKey) return { status: 400, body: { error: '请先配置你的 DeepSeek API Key（点击右上角钥匙图标）' } };
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
