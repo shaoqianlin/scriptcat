@@ -18,6 +18,19 @@ export function createRepository(db) {
       return db.prepare('SELECT id, nickname FROM users WHERE id = ?').bind(id).first();
     },
 
+    async getApiKey(userId) {
+      const user = await db.prepare('SELECT api_key FROM users WHERE id = ?').bind(userId).first();
+      return (user?.api_key || '').trim();
+    },
+
+    async setApiKey(userId, apiKey) {
+      await db.prepare('UPDATE users SET api_key = ? WHERE id = ?').bind(apiKey, userId).run();
+    },
+
+    async clearApiKey(userId) {
+      await db.prepare('UPDATE users SET api_key = NULL WHERE id = ?').bind(userId).run();
+    },
+
     async createUser(nickname, passwordHash, createdAt) {
       const result = await db.prepare(
         'INSERT INTO users (nickname, password_hash, created_at) VALUES (?, ?, ?)',

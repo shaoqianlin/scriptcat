@@ -620,7 +620,7 @@
   <div class="api-settings-overlay" id="apiSettingsOverlay" onclick="closeApiSettings(event)">
     <div class="api-settings-panel" onclick="event.stopPropagation()">
       <h3>🔑 DeepSeek API</h3>
-      <p class="api-settings-help">填写你自己的 DeepSeek API Key。密钥只保存在当前浏览器，不会保存到账号或服务器。</p>
+      <p class="api-settings-help">填写你自己的 DeepSeek API Key。登录后保存的 Key 会同步到账号，换设备登录后自动生效；未登录则只保存在当前浏览器。</p>
       <div class="api-key-row">
         <input class="api-key-input" id="deepSeekApiKey" type="password" autocomplete="off" placeholder="sk-..." maxlength="512">
         <button class="api-key-toggle" id="deepSeekApiKeyToggle" onclick="toggleApiKeyVisibility()" title="显示或隐藏 Key" aria-label="显示或隐藏 Key">👁</button>
@@ -658,7 +658,9 @@ function openApiSettings() {
   const saved = localStorage.getItem(DEEPSEEK_KEY_STORAGE) || '';
   document.getElementById('deepSeekApiKey').value = saved;
   document.getElementById('deepSeekApiKey').type = 'password';
-  document.getElementById('apiKeyStatus').textContent = saved ? '当前浏览器已保存一个 Key' : '未设置个人 Key，无法分析，请先配置';
+  document.getElementById('apiKeyStatus').textContent = saved
+    ? (isLoggedIn() ? '当前 Key 已保存到账号，登录后自动同步' : '当前浏览器已保存一个 Key（登录后可同步到账号）')
+    : '未设置个人 Key，无法分析，请先配置';
   document.getElementById('apiSettingsOverlay').classList.add('show');
 }
 
@@ -672,7 +674,7 @@ function toggleApiKeyVisibility() {
   input.type = input.type === 'password' ? 'text' : 'password';
 }
 
-function saveApiKey() {
+async function saveApiKey() {
   const input = document.getElementById('deepSeekApiKey');
   const key = input.value.trim();
   if (!key) return clearApiKey();
@@ -681,15 +683,56 @@ function saveApiKey() {
     return;
   }
   localStorage.setItem(DEEPSEEK_KEY_STORAGE, key);
-  document.getElementById('apiKeyStatus').textContent = '已保存在当前浏览器';
-  showToast('DeepSeek Key 已保存');
+  if (isLoggedIn()) {
+    document.getElementById('apiKeyStatus').textContent = '正在保存到账号…';
+    try {
+      const res = await apiFetch('/api/apikey', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ key }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || '同步失败');
+      document.getElementById('apiKeyStatus').textContent = '已保存到账号（所有设备登录后自动生效）';
+      showToast('✅ DeepSeek Key 已保存到账号');
+    } catch (err) {
+      document.getElementById('apiKeyStatus').textContent = '已保存在当前浏览器，但同步到账号失败：' + (err.message || '网络错误');
+      showToast('⚠️ ' + (err.message || '同步失败'));
+    }
+  } else {
+    document.getElementById('apiKeyStatus').textContent = '已保存在当前浏览器（登录后可同步到账号）';
+    showToast('DeepSeek Key 已保存');
+  }
 }
 
-function clearApiKey() {
+async function clearApiKey() {
   localStorage.removeItem(DEEPSEEK_KEY_STORAGE);
   document.getElementById('deepSeekApiKey').value = '';
   document.getElementById('apiKeyStatus').textContent = '未设置个人 Key，无法分析，请先配置';
-  showToast('已清除个人 DeepSeek Key');
+  if (isLoggedIn()) {
+    try {
+      const res = await apiFetch('/api/apikey', { method: 'DELETE', headers: authHeaders() });
+      showToast(res.ok ? '已清除个人 DeepSeek Key' : '⚠️ 本地已清除，但账号同步失败');
+    } catch {
+      showToast('⚠️ 本地已清除，但账号同步失败');
+    }
+  } else {
+    showToast('已清除个人 DeepSeek Key');
+  }
+}
+
+async function syncApiKeyFromServer() {
+  if (!isLoggedIn()) return;
+  try {
+    const local = (localStorage.getItem(DEEPSEEK_KEY_STORAGE) || '').trim();
+    const res = await apiFetch('/api/apikey', { headers: authHeaders() });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.hasKey && data.key) {
+      localStorage.setItem(DEEPSEEK_KEY_STORAGE, data.key);
+    } else if (local) {
+      // 账号里还没有 Key，但本地有 → 上传到账号，避免登录后丢失
+      await apiFetch('/api/apikey', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ key: local }) });
+    } else {
+      localStorage.removeItem(DEEPSEEK_KEY_STORAGE);
+    }
+  } catch {}
 }
 
 // ===== Navigation =====
@@ -709,7 +752,16 @@ function startCreate() {
   showScreen('paste');
   updateHistoryBadge();
 }
-function goPaste() { showScreen('paste'); updateHistoryBadge(); document.getElementById('batchToggleRow').style.display = 'none'; }
+function goPaste() {
+  showScreen('paste');
+  document.getElementById('metaTitle').value = '';
+  document.getElementById('metaDesc').value = '';
+  document.getElementById('metaTags').value = '';
+  document.getElementById('scriptInput').value = '';
+  updateDepthIndicator();
+  updateHistoryBadge();
+  document.getElementById('batchToggleRow').style.display = 'none';
+}
 
 function updateSteps() {
   const steps = document.querySelectorAll('.step');
@@ -1520,6 +1572,7 @@ async function submitAuth() {
     updateUserBadge();
     closeAuthPanel();
     showToast(authMode === 'login' ? '👋 欢迎回来，' + data.username : '🎉 注册成功，欢迎 ' + data.username);
+    await syncApiKeyFromServer();
     await refreshHistory();
   } catch (err) {
     showToast('⚠️ ' + (err.message || '操作失败'));
@@ -1531,6 +1584,7 @@ function doLogout() {
   if (token) apiFetch('/api/logout', { method: 'POST', headers: authHeaders() }).catch(() => {});
   localStorage.removeItem('boomcat_token');
   localStorage.removeItem('boomcat_user');
+  localStorage.removeItem(DEEPSEEK_KEY_STORAGE);
   updateUserBadge();
   closeAuthPanel();
   showToast('👋 已退出登录');

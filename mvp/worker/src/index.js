@@ -10,6 +10,12 @@ function json(body, status = 200, extraHeaders = {}) {
   });
 }
 
+function maskApiKey(key) {
+  if (!key) return '';
+  if (key.length <= 8) return '••••••••';
+  return key.slice(0, 3) + '••••' + key.slice(-4);
+}
+
 function allowedOrigins(environment) {
   return String(environment.ALLOWED_ORIGINS || '')
     .split(',')
@@ -113,6 +119,23 @@ export function createWorker({ repositoryFactory, analyze = null, synthesize = n
 
         const auth = await requireUser(request, repository);
         if (auth.response) return json(auth.response.body ? await auth.response.json() : { error: '未登录' }, auth.response.status, headers);
+
+        if (url.pathname === '/api/apikey' && request.method === 'GET') {
+          const key = await repository.getApiKey(auth.userId);
+          return json({ hasKey: !!key, key, masked: maskApiKey(key) }, 200, headers);
+        }
+        if (url.pathname === '/api/apikey' && request.method === 'POST') {
+          const body = await requestBody(request);
+          const key = String(body.key || '').trim();
+          if (!key) return json({ error: '缺少 Key' }, 400, headers);
+          if (key.length > 512) return json({ error: 'Key 不能超过 512 个字符' }, 400, headers);
+          await repository.setApiKey(auth.userId, key);
+          return json({ ok: true, masked: maskApiKey(key) }, 200, headers);
+        }
+        if (url.pathname === '/api/apikey' && request.method === 'DELETE') {
+          await repository.clearApiKey(auth.userId);
+          return json({ ok: true }, 200, headers);
+        }
 
         if (url.pathname === '/api/me' && request.method === 'GET') {
           const user = await repository.findUserById(auth.userId);
